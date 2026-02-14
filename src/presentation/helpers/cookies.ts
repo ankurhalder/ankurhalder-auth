@@ -6,7 +6,7 @@ const IS_PRODUCTION = env.NODE_ENV === "production";
 export const BASE_COOKIE_CONFIG = {
   httpOnly: true,
   secure: IS_PRODUCTION,
-  sameSite: "lax" as const,
+  sameSite: IS_PRODUCTION ? ("none" as const) : ("lax" as const),
   domain: IS_PRODUCTION ? ".ankurhalder.com" : undefined,
   path: "/",
 };

@@ -7,8 +7,18 @@ export function withCors(handler: RouteHandler): RouteHandler {
   return async (request: NextRequest): Promise<Response> => {
     const origin = request.headers.get("origin");
     const allowedOrigins = env.ALLOWED_ORIGINS;
+    const allowedDomain = ".ankurhalder.com";
 
-    const isAllowed = origin && allowedOrigins.includes(origin);
+    const isAllowed =
+      origin &&
+      (allowedOrigins.includes(origin) || origin.endsWith(allowedDomain));
+
+    if (!isAllowed) {
+      console.warn(`CORS blocked: ${origin} not in allowedOrigins`, {
+        allowedOrigins,
+        requestPath: request.url,
+      });
+    }
 
     if (request.method === "OPTIONS") {
       if (!isAllowed) {
