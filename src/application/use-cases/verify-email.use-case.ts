@@ -9,8 +9,15 @@ export interface VerifyEmailInput {
 }
 
 export interface VerifyEmailOutput {
-  success: true;
+  success: boolean;
   message: string;
+  user: {
+    id: string;
+    email: string;
+    role: string;
+    isVerified: boolean;
+    tokenVersion: number;
+  };
 }
 
 export class VerifyEmailUseCase {
@@ -97,7 +104,14 @@ export class VerifyEmailUseCase {
 
     return {
       success: true,
-      message: "Email verified successfully. You can now sign in.",
+      message: "Email verified successfully",
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        isVerified: true,
+        tokenVersion: user.tokenVersion,
+      },
     };
   }
 }

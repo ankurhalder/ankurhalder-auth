@@ -1,15 +1,20 @@
 import { type NextRequest } from "next/server";
+import { v4 as uuidv4 } from "uuid";
 import { VerifyEmailUseCase } from "@/application/use-cases/verify-email.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";
+import { SessionRepositoryImpl } from "@/infrastructure/database/session.repository.impl";
 import { AuthEventRepositoryImpl } from "@/infrastructure/database/auth-event.repository.impl";
+import { JwtServiceImpl } from "@/infrastructure/crypto/jwt.service";
 import { withCors } from "@/presentation/middleware/cors";
 import {
   errorResponse,
   successResponse,
 } from "@/presentation/helpers/response";
 import { buildRequestContext } from "@/presentation/helpers/request-context";
+import { setAuthCookies } from "@/presentation/helpers/cookies";
 import { VerifyEmailSchema } from "@/presentation/validation/schemas";
 import { ValidationError } from "@/domain/errors/validation.error";
+import { sha256Hash } from "@/infrastructure/crypto/hash";
 
 async function verifyEmailHandler(request: NextRequest): Promise<Response> {
   const context = buildRequestContext(request);
@@ -35,7 +40,6 @@ async function verifyEmailHandler(request: NextRequest): Promise<Response> {
         },
         {} as Record<string, string>
       );
-
       throw new ValidationError("Invalid verification data", fields);
     }
 
@@ -43,20 +47,61 @@ async function verifyEmailHandler(request: NextRequest): Promise<Response> {
 
     const userRepository = new UserRepositoryImpl();
     const authEventRepository = new AuthEventRepositoryImpl();
+    const sessionRepository = new SessionRepositoryImpl();
+    const tokenService = new JwtServiceImpl();
 
     const verifyEmailUseCase = new VerifyEmailUseCase(
       userRepository,
       authEventRepository
     );
 
-    await verifyEmailUseCase.execute({ token: verifiedToken }, context);
+    const result = await verifyEmailUseCase.execute(
+      { token: verifiedToken },
+      context
+    );
 
-    return successResponse(
+    const sessionId = uuidv4();
+    const ttlSeconds = 7 * 24 * 60 * 60;
+
+    const [accessResult, refreshResult] = await Promise.all([
+      tokenService.generateAccessToken({
+        userId: result.user.id,
+        email: result.user.email,
+        role: result.user.role as "admin" | "user",
+        sessionId,
+        tokenVersion: result.user.tokenVersion,
+      }),
+      tokenService.generateRefreshToken({
+        userId: result.user.id,
+        sessionId,
+        tokenVersion: result.user.tokenVersion,
+        ttlSeconds,
+      }),
+    ]);
+
+    const refreshTokenHash = sha256Hash(refreshResult.token);
+
+    await sessionRepository.create({
+      sessionId,
+      userId: result.user.id,
+      refreshTokenHash,
+      ipAddress: context.ipAddress,
+      userAgent: context.userAgent,
+      expiresAt: new Date(Date.now() + ttlSeconds * 1000),
+      lastUsedAt: new Date(),
+    });
+
+    const response = successResponse(
       {
-        message: "Email verified successfully. You can now sign in.",
+        message: "Email verified successfully. You are now logged in.",
+        user: result.user,
       },
       200
     );
+
+    setAuthCookies(response, accessResult.token, refreshResult.token, false);
+
+    return response;
   } catch (error) {
     return errorResponse(
       error instanceof Error ? error : new Error(String(error)),

@@ -65,7 +65,7 @@ async function signinHandler(request: NextRequest): Promise<Response> {
       return successResponse(
         {
           message: "OTP sent to your email. Please verify to complete signin.",
-          requiresOtp: true,
+          requiresOTP: true,
         },
         200
       );
