@@ -1,7 +1,7 @@
 ================================================================================
 COMPLETE CODEBASE
 ================================================================================
-Generated: 2026-02-14T16:33:06.264Z
+Generated: 2026-02-14T16:37:58.524Z
 Project: ankurhalder-auth
 Total Files: 101
 ================================================================================
@@ -6587,7 +6587,7 @@ File: package.json
 
 {
   "name": "ankurhalder-auth",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "private": true,
   "description": "Authentication service for auth.ankurhalder.com",
   "scripts": {
@@ -9936,14 +9936,18 @@ export class SignupUseCase {
       verificationTokenExpiry,
     });
 
-    this.emailProvider
-      .sendVerificationEmail(user.email, rawVerificationToken)
-      .catch((error: unknown) => {
-        console.error(
-          `[SignupUseCase] Failed to send verification email to ${user.email}:`,
-          error instanceof Error ? error.message : "Unknown error"
-        );
-      });
+    try {
+      await this.emailProvider.sendVerificationEmail(
+        user.email,
+        rawVerificationToken
+      );
+    } catch (emailError: unknown) {
+      console.error(
+        `[SignupUseCase] Failed to send verification email to ${user.email}:`,
+        emailError instanceof Error ? emailError.message : "Unknown error",
+        emailError
+      );
+    }
 
     void this.authEventRepository.create({
       eventType: "SIGNUP",

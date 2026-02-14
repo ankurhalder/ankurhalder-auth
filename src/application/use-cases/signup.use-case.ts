@@ -58,14 +58,18 @@ export class SignupUseCase {
       verificationTokenExpiry,
     });
 
-    this.emailProvider
-      .sendVerificationEmail(user.email, rawVerificationToken)
-      .catch((error: unknown) => {
-        console.error(
-          `[SignupUseCase] Failed to send verification email to ${user.email}:`,
-          error instanceof Error ? error.message : "Unknown error"
-        );
-      });
+    try {
+      await this.emailProvider.sendVerificationEmail(
+        user.email,
+        rawVerificationToken
+      );
+    } catch (emailError: unknown) {
+      console.error(
+        `[SignupUseCase] Failed to send verification email to ${user.email}:`,
+        emailError instanceof Error ? emailError.message : "Unknown error",
+        emailError
+      );
+    }
 
     void this.authEventRepository.create({
       eventType: "SIGNUP",
