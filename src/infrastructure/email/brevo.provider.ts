@@ -3,27 +3,56 @@ import pRetry from "p-retry";
 import type { IEmailProvider } from "@app/interfaces/email.provider";
 import { env } from "@/env";
 
+let emailAPIInstance: brevo.TransactionalEmailsApi | null = null;
+
 function getApiInstance(): brevo.TransactionalEmailsApi {
-  const apiKeyFromEnv = env.BREVO_API_KEY;
-  const apiKeyFromProcess = process.env.BREVO_API_KEY;
-
-  console.log("[Brevo] API Key Debug Info:", {
-    hasEnvKey: !!apiKeyFromEnv,
-    envKeyLength: apiKeyFromEnv?.length ?? 0,
-    envKeyPrefix: apiKeyFromEnv?.substring(0, 20) ?? "MISSING",
-    hasProcessKey: !!apiKeyFromProcess,
-    processKeyLength: apiKeyFromProcess?.length ?? 0,
-    processKeyPrefix: apiKeyFromProcess?.substring(0, 20) ?? "MISSING",
-  });
-
-  if (!process.env.BREVO_API_KEY) {
-    process.env.BREVO_API_KEY = env.BREVO_API_KEY;
-    console.log("[Brevo] Set BREVO_API_KEY in process.env from env object");
+  if (emailAPIInstance) {
+    return emailAPIInstance;
   }
 
-  const api = new brevo.TransactionalEmailsApi();
-  console.log("[Brevo] API instance created");
-  return api;
+  const apiKeyFromEnv = env.BREVO_API_KEY;
+
+  console.log("[Brevo] Initializing API with key:", {
+    hasKey: !!apiKeyFromEnv,
+    length: apiKeyFromEnv?.length ?? 0,
+    prefix: apiKeyFromEnv?.substring(0, 20) ?? "MISSING",
+  });
+
+  const emailAPI = new brevo.TransactionalEmailsApi();
+
+  try {
+    emailAPI.setApiKey(
+      brevo.TransactionalEmailsApiApiKeys.apiKey,
+      apiKeyFromEnv
+    );
+    console.log("[Brevo] API key configured successfully using setApiKey()");
+  } catch (err) {
+    console.error(
+      "[Brevo] setApiKey() failed, falling back to direct assignment:",
+      err
+    );
+    try {
+      const api: Record<
+        string,
+        Record<string, Record<string, unknown>>
+      > = emailAPI as unknown as Record<
+        string,
+        Record<string, Record<string, unknown>>
+      >;
+      api.authentications!.apiKey!.apiKey = apiKeyFromEnv;
+      console.log(
+        "[Brevo] API key configured successfully via direct assignment"
+      );
+    } catch (fallbackErr) {
+      console.error(
+        "[Brevo] Failed to set API key via both methods:",
+        fallbackErr
+      );
+    }
+  }
+
+  emailAPIInstance = emailAPI;
+  return emailAPI;
 }
 
 const RETRY_OPTIONS: Parameters<typeof pRetry>[1] = {
