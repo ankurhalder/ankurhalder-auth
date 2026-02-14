@@ -7,7 +7,7 @@ const OTP_MIN = 10_000_000;
 const OTP_MAX = 99_999_999;
 
 function getEncryptionKey(): Buffer {
-  return Buffer.from(env.ENCRYPTION_KEY, "utf-8");
+  return Buffer.from(env.ENCRYPTION_KEY, "hex");
 }
 
 export function generateOtp(): string {

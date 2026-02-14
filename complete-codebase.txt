@@ -1,7 +1,7 @@
 ================================================================================
 COMPLETE CODEBASE
 ================================================================================
-Generated: 2026-02-14T16:20:02.132Z
+Generated: 2026-02-14T16:33:06.264Z
 Project: ankurhalder-auth
 Total Files: 101
 ================================================================================
@@ -6587,7 +6587,7 @@ File: package.json
 
 {
   "name": "ankurhalder-auth",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "private": true,
   "description": "Authentication service for auth.ankurhalder.com",
   "scripts": {
@@ -11458,7 +11458,7 @@ const OTP_MIN = 10_000_000;
 const OTP_MAX = 99_999_999;
 
 function getEncryptionKey(): Buffer {
-  return Buffer.from(env.ENCRYPTION_KEY, "utf-8");
+  return Buffer.from(env.ENCRYPTION_KEY, "hex");
 }
 
 export function generateOtp(): string {
