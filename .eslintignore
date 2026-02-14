@@ -1,0 +1,11 @@
+node_modules
+.next
+build
+dist
+out
+scripts
+*.config.ts
+*.config.js
+*.config.mjs
+.husky
+complete-codebase.txt

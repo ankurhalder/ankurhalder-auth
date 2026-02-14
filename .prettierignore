@@ -1,0 +1,17 @@
+node_modules
+.next
+build
+dist
+out
+coverage
+*.log
+.env*
+!.env.example
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+complete-codebase.txt
+*.pem
+*.key
+.husky
+tmpclaude-*
