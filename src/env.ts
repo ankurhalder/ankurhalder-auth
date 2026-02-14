@@ -9,7 +9,9 @@ const envSchema = z.object({
   ALLOWED_ORIGINS: z
     .string()
     .transform((s) => s.split(",").map((o) => o.trim()))
-    .default("https://www.ankurhalder.com,https://ankurhalder.com"),
+    .default(
+      "https://www.ankurhalder.com,https://ankurhalder.com,https://www.auth.ankurhalder.com,https://auth.ankurhalder.com,http://localhost:3000"
+    ),
 
   JWT_PRIVATE_KEY: z
     .string()
