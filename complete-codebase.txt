@@ -1,7 +1,7 @@
 ================================================================================
 COMPLETE CODEBASE
 ================================================================================
-Generated: 2026-02-14T16:52:22.611Z
+Generated: 2026-02-14T16:58:15.477Z
 Project: ankurhalder-auth
 Total Files: 101
 ================================================================================
@@ -6587,7 +6587,7 @@ File: package.json
 
 {
   "name": "ankurhalder-auth",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": true,
   "description": "Authentication service for auth.ankurhalder.com",
   "scripts": {
@@ -12881,9 +12881,12 @@ export class BrevoEmailProvider implements IEmailProvider {
         await api.sendTransacEmail(sendSmtpEmail);
         console.log("[Brevo] Email sent successfully");
       } catch (error) {
+        const errorObj = error as Record<string, unknown>;
         console.error("[Brevo] sendTransacEmail failed:", {
-          status: (error as { statusCode?: number }).statusCode,
+          status: (errorObj?.response as Record<string, unknown>)?.status,
+          statusCode: errorObj?.statusCode,
           message: (error as Error).message,
+          responseData: (errorObj?.response as Record<string, unknown>)?.data,
         });
         throw error;
       }

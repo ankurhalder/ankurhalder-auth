@@ -327,9 +327,12 @@ export class BrevoEmailProvider implements IEmailProvider {
         await api.sendTransacEmail(sendSmtpEmail);
         console.log("[Brevo] Email sent successfully");
       } catch (error) {
+        const errorObj = error as Record<string, unknown>;
         console.error("[Brevo] sendTransacEmail failed:", {
-          status: (error as { statusCode?: number }).statusCode,
+          status: (errorObj?.response as Record<string, unknown>)?.status,
+          statusCode: errorObj?.statusCode,
           message: (error as Error).message,
+          responseData: (errorObj?.response as Record<string, unknown>)?.data,
         });
         throw error;
       }
