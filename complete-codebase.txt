@@ -1,9 +1,9 @@
 ================================================================================
 COMPLETE CODEBASE
 ================================================================================
-Generated: 2026-02-14T15:45:27.694Z
+Generated: 2026-02-14T16:20:02.132Z
 Project: ankurhalder-auth
-Total Files: 100
+Total Files: 101
 ================================================================================
 
 ================================================================================
@@ -61,6 +61,7 @@ ankurhalder-auth/
 ├── next.config.ts
 ├── package.json
 ├── postcss.config.mjs
+├── proxy.ts
 ├── public
 ├── README.md
 ├── scripts
@@ -6558,58 +6559,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: false,
 
-  async headers() {
-    return [
-      {
-        source: "/api/:path*",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "0",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
-          },
-          {
-            key: "Permissions-Policy",
-            value:
-              "camera=(), microphone=(), geolocation=(), interest-cohort=()",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=63072000; includeSubDomains; preload",
-          },
-          {
-            key: "Content-Security-Policy",
-            value: "default-src 'none'; frame-ancestors 'none'",
-          },
-        ],
-      },
-      {
-        source: "/.well-known/jwks.json",
-        headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=86400, s-maxage=86400",
-          },
-          {
-            key: "Access-Control-Allow-Origin",
-            value: "*",
-          },
-        ],
-      },
-    ];
-  },
-
   async redirects() {
     return [
       {
@@ -6638,7 +6587,7 @@ File: package.json
 
 {
   "name": "ankurhalder-auth",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "private": true,
   "description": "Authentication service for auth.ankurhalder.com",
   "scripts": {
@@ -6702,6 +6651,89 @@ const config = {
 };
 
 export default config;
+
+
+--------------------------------------------------------------------------------
+File: proxy.ts
+--------------------------------------------------------------------------------
+
+import { NextResponse, type NextRequest } from "next/server";
+import { env } from "@/env";
+
+export function proxy(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  const allowedOrigins = env.ALLOWED_ORIGINS;
+  const allowedDomain = ".ankurhalder.com";
+
+  const isAllowed =
+    origin &&
+    (allowedOrigins.includes(origin) || origin.endsWith(allowedDomain));
+
+  if (!isAllowed && origin) {
+    console.warn(`CORS blocked: ${origin} not in allowedOrigins`, {
+      allowedOrigins,
+      requestPath: request.url,
+    });
+  }
+
+  if (request.method === "OPTIONS") {
+    if (!isAllowed) {
+      return new NextResponse(null, { status: 403 });
+    }
+
+    return new NextResponse(null, {
+      status: 204,
+      headers: {
+        "Access-Control-Allow-Origin": origin || "*",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers":
+          "Content-Type, Authorization, X-CSRF-Token",
+        "Access-Control-Allow-Credentials": "true",
+        "Access-Control-Max-Age": "86400",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+        "X-XSS-Protection": "0",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy":
+          "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+        "Strict-Transport-Security":
+          "max-age=63072000; includeSubDomains; preload",
+        "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
+      },
+    });
+  }
+
+  const response = NextResponse.next();
+
+  if (isAllowed && origin) {
+    response.headers.set("Access-Control-Allow-Origin", origin);
+    response.headers.set("Access-Control-Allow-Credentials", "true");
+    response.headers.set("Vary", "Origin");
+  }
+
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-XSS-Protection", "0");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+  );
+  response.headers.set(
+    "Strict-Transport-Security",
+    "max-age=63072000; includeSubDomains; preload"
+  );
+  response.headers.set(
+    "Content-Security-Policy",
+    "default-src 'none'; frame-ancestors 'none'"
+  );
+
+  return response;
+}
+
+export const config = {
+  matcher: "/api/:path*",
+};
 
 
 --------------------------------------------------------------------------------
@@ -13838,37 +13870,6 @@ File: vercel.json
       "source": "/",
       "destination": "/api/health",
       "permanent": false
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/:path*",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "geolocation=(), microphone=(), camera=()"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains"
-        }
-      ]
     }
   ]
 }
