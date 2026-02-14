@@ -1,5 +1,6 @@
 node scripts/pre-commit.js
 
 if [ $? -eq 0 ]; then
+  node scripts/version-increment.js
   git add -A
 fi
