@@ -3,7 +3,7 @@ import { env } from "@/env";
 
 const IS_PRODUCTION = env.NODE_ENV === "production";
 
-const BASE_COOKIE_CONFIG = {
+export const BASE_COOKIE_CONFIG = {
   httpOnly: true,
   secure: IS_PRODUCTION,
   sameSite: "lax" as const,

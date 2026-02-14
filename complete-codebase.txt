@@ -1,22 +1,24 @@
 ================================================================================
 COMPLETE CODEBASE
 ================================================================================
-Generated: 2026-02-14T12:00:54.343Z
-Project: auth
-Total Files: 99
+Generated: 2026-02-14T13:14:29.511Z
+Project: ankurhalder-auth
+Total Files: 100
 ================================================================================
 
 ================================================================================
 DIRECTORY STRUCTURE
 ================================================================================
 
-auth/
+ankurhalder-auth/
 ├── app
 │   ├── api
 │   │   ├── .well-known
 │   │   │   └── jwks.json
 │   │   │       └── route.ts
 │   │   ├── auth
+│   │   │   ├── csrf-token
+│   │   │   │   └── route.ts
 │   │   │   ├── forgot-password
 │   │   │   │   └── route.ts
 │   │   │   ├── logout
@@ -189,6 +191,46 @@ export async function GET(): Promise<NextResponse> {
     );
   }
 }
+
+
+--------------------------------------------------------------------------------
+File: app\api\auth\csrf-token\route.ts
+--------------------------------------------------------------------------------
+
+import { type NextRequest } from "next/server";
+import crypto from "node:crypto";
+import { withCors } from "@/presentation/middleware/cors";
+import { withRateLimit } from "@/presentation/middleware/rate-limit";
+import {
+  successResponse,
+  errorResponse,
+} from "@/presentation/helpers/response";
+import { buildRequestContext } from "@/presentation/helpers/request-context";
+import { BASE_COOKIE_CONFIG } from "@/presentation/helpers/cookies";
+
+const CSRF_TOKEN_BYTES = 32;
+const CSRF_COOKIE_NAME = "csrf-token";
+
+async function csrfTokenHandler(request: NextRequest): Promise<Response> {
+  const context = buildRequestContext(request);
+
+  try {
+    const token = crypto.randomBytes(CSRF_TOKEN_BYTES).toString("hex");
+
+    const response = successResponse({ token }, 200);
+
+    response.cookies.set(CSRF_COOKIE_NAME, token, BASE_COOKIE_CONFIG);
+
+    return response;
+  } catch (error) {
+    return errorResponse(
+      error instanceof Error ? error : new Error(String(error)),
+      context.requestId
+    );
+  }
+}
+
+export const GET = withCors(withRateLimit(60, 60)(csrfTokenHandler));
 
 
 --------------------------------------------------------------------------------
@@ -6596,7 +6638,7 @@ File: package.json
 
 {
   "name": "ankurhalder-auth",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "Authentication service for auth.ankurhalder.com",
   "scripts": {
@@ -13210,7 +13252,7 @@ import { env } from "@/env";
 
 const IS_PRODUCTION = env.NODE_ENV === "production";
 
-const BASE_COOKIE_CONFIG = {
+export const BASE_COOKIE_CONFIG = {
   httpOnly: true,
   secure: IS_PRODUCTION,
   sameSite: "lax" as const,
