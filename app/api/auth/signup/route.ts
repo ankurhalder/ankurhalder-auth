@@ -65,4 +65,4 @@ async function signupHandler(request: NextRequest): Promise<Response> {
   }
 }
 
-export const POST = withCors(withRateLimit(5, 3600)(signupHandler));
+export const POST = withCors(withRateLimit(10, 3600)(signupHandler));
