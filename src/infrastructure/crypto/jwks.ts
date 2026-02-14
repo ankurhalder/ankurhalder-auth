@@ -1,10 +1,3 @@
-/**
- * JWKS (JSON Web Key Set) Provider
- *
- * Exports public keys in JWK format for token validation by consuming services.
- * Supports both access token and refresh token public keys.
- */
-
 import { exportJWK, type JWK } from "jose";
 import { env } from "@/env";
 
@@ -12,11 +5,6 @@ export interface JsonWebKeySet {
   keys: JWK[];
 }
 
-/**
- * Export public keys as JWKS format
- *
- * @returns JsonWebKeySet containing both access and refresh token public keys
- */
 export async function getJwksData(): Promise<JsonWebKeySet> {
   const [accessPublicKey, refreshPublicKey] = await Promise.all([
     crypto.subtle.importKey(

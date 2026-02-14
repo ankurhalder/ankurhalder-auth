@@ -1,11 +1,3 @@
-/**
- * Forgot Password Route Handler
- *
- * POST /api/auth/forgot-password
- * Rate limit: 3 requests per hour per IP
- * Middleware: CORS, Rate Limit
- */
-
 import { type NextRequest } from "next/server";
 import { ForgotPasswordUseCase } from "@/application/use-cases/forgot-password.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

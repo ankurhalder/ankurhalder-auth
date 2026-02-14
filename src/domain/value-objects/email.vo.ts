@@ -1,13 +1,5 @@
 import { ValidationError } from "@domain/errors/validation.error";
 
-/**
- * Email value object.
- * Validates format and normalizes to lowercase.
- *
- * @example
- * const email = Email.create("User@Example.COM");
- * console.log(email.value); // "user@example.com"
- */
 export class Email {
   private static readonly EMAIL_REGEX =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;

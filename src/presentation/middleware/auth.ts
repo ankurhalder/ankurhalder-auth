@@ -1,17 +1,3 @@
-/**
- * Authentication Middleware
- *
- * 8-step JWT verification process:
- * 1. Extract token from Authorization header
- * 2. Verify JWT signature and expiration
- * 3. Validate token structure (sub, jti, tokenVersion)
- * 4. Check JTI not revoked (Redis)
- * 5. Fetch user from database
- * 6. Verify user exists and is active
- * 7. Verify tokenVersion matches user's current version
- * 8. Verify user role meets required level
- */
-
 import { type NextRequest } from "next/server";
 import { JwtServiceImpl } from "@/infrastructure/crypto/jwt.service";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";
@@ -33,12 +19,6 @@ const ROLE_HIERARCHY: Record<string, number> = {
   admin: 2,
 };
 
-/**
- * Authentication middleware wrapper
- *
- * @param requiredLevel - Minimum required authentication level
- * @returns Wrapped handler with authentication
- */
 export function withAuth(requiredLevel: AuthLevel = "user") {
   return function (
     handler: RouteHandler

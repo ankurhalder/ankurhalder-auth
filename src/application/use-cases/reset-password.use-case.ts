@@ -12,13 +12,9 @@ import {
 } from "@infra/crypto/password.service";
 import { sha256Hash } from "@infra/crypto/hash";
 
-/**
- * Input/Output DTOs for password reset.
- */
 export interface ResetPasswordInput {
-  /** The raw reset token from the URL query parameter */
   token: string;
-  /** The new password chosen by the user */
+
   newPassword: string;
 }
 
@@ -27,33 +23,8 @@ export interface ResetPasswordOutput {
   message: string;
 }
 
-/** User revocation TTL: 30 days (matches max token lifetime) */
 const USER_REVOCATION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-/**
- * ResetPasswordUseCase — Completes the password reset flow.
- *
- * This is a high-security operation because it:
- * 1. Changes the user's password (authentication factor)
- * 2. Triggers a global logout (all existing sessions become invalid)
- * 3. Increments the tokenVersion (all existing JWTs become invalid)
- *
- * Flow:
- * 1. Hash the incoming token: SHA256(token)
- * 2. Find user by passwordResetTokenHash
- * 3. Check token not expired (1 hour)
- * 4. Validate new password complexity
- * 5. Hash new password with bcrypt(12)
- * 6. Update password in DB
- * 7. Increment tokenVersion (invalidates all existing JWTs)
- * 8. Clear password reset token fields
- * 9. Revoke all user sessions in Redis
- * 10. Delete all sessions from MongoDB
- * 11. Emit audit event
- *
- * After this operation, the user must sign in again with their new password.
- * All previous sessions on all devices are terminated.
- */
 export class ResetPasswordUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

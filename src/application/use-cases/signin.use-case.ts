@@ -21,25 +21,10 @@ import {
 } from "@infra/crypto/otp.service";
 import { checkOtpRateLimit } from "@infra/redis/otp-rate-limiter";
 
-/** Default session duration: 7 days */
 const DEFAULT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-/** RememberMe session duration: 30 days */
 const REMEMBER_ME_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-/**
- * SigninUseCase — Authenticates a user.
- *
- * Two paths:
- * A) Standard user: verify credentials -> create session -> return tokens
- * B) Admin user: verify credentials -> generate OTP -> send email -> return { requiresOtp: true }
- *
- * Security behaviors:
- * - Unverified users cannot sign in
- * - Generic "Invalid credentials" error prevents user enumeration
- * - PBKDF2 legacy hashes are auto-migrated to bcrypt on success
- * - Admin OTP has escalating backoff rate limiting
- */
 export class SigninUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -129,9 +114,6 @@ export class SigninUseCase {
     return this.handleStandardSignin(user, input.rememberMe ?? false, ctx);
   }
 
-  /**
-   * Admin sign-in: generate and send OTP, require second factor.
-   */
   private async handleAdminSignin(
     user: {
       id: string;
@@ -199,9 +181,6 @@ export class SigninUseCase {
     };
   }
 
-  /**
-   * Standard user sign-in: create session in DB, generate JWT tokens.
-   */
   private async handleStandardSignin(
     user: {
       id: string;

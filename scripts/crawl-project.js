@@ -1,27 +1,3 @@
-#!/usr/bin/env node
-
-/**
- * Project Crawler Script
- *
- * Crawls the entire project directory structure and consolidates all relevant
- * source files into a single complete-codebase.txt file for easy sharing,
- * documentation, or AI analysis.
- *
- * Features:
- * - Skips node_modules, .next, .git, and temp directories
- * - Skips binary files (.pem, .key, .jpg, .png, etc.)
- * - Skips large generated files (package-lock.json, etc.)
- * - Includes directory tree structure
- * - Preserves file structure and formatting
- * - Adds clear file separators
- *
- * Usage:
- *   node scripts/crawl-project.js
- *
- * Output:
- *   complete-codebase.txt in project root
- */
-
 const fs = require("fs");
 const path = require("path");
 
@@ -98,9 +74,6 @@ const CONFIG = {
   ],
 };
 
-/**
- * Check if path should be skipped
- */
 function shouldSkip(filePath, stats) {
   const basename = path.basename(filePath);
 
@@ -135,9 +108,6 @@ function shouldSkip(filePath, stats) {
   return false;
 }
 
-/**
- * Generate directory tree structure
- */
 function generateTree(dir, prefix = "", isLast = true) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const filtered = entries.filter((entry) => {
@@ -163,9 +133,6 @@ function generateTree(dir, prefix = "", isLast = true) {
   return output;
 }
 
-/**
- * Recursively crawl directory and collect files
- */
 function crawlDirectory(dir, files = []) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
@@ -186,9 +153,6 @@ function crawlDirectory(dir, files = []) {
   return files;
 }
 
-/**
- * Read file content safely
- */
 function readFileContent(filePath) {
   try {
     return fs.readFileSync(filePath, "utf8");
@@ -197,16 +161,10 @@ function readFileContent(filePath) {
   }
 }
 
-/**
- * Get relative path from root
- */
 function getRelativePath(filePath) {
   return path.relative(CONFIG.rootDir, filePath);
 }
 
-/**
- * Main crawler function
- */
 function crawlProject() {
   console.log("🔍 Starting project crawl...\n");
 

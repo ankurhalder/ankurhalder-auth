@@ -1,11 +1,3 @@
-/**
- * Signin Route Handler
- *
- * POST /api/auth/signin
- * Rate limit: 10 requests per 15 minutes per IP
- * Middleware: CORS, Rate Limit
- */
-
 import { type NextRequest } from "next/server";
 import { SigninUseCase } from "@/application/use-cases/signin.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

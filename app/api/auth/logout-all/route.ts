@@ -1,10 +1,3 @@
-/**
- * Global Logout Route Handler
- *
- * POST /api/auth/logout-all
- * Middleware: CORS, Auth (user level)
- */
-
 import { type NextRequest } from "next/server";
 import { GlobalLogoutUseCase } from "@/application/use-cases/global-logout.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

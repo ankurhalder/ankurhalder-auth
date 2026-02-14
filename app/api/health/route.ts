@@ -2,23 +2,6 @@ import { NextResponse } from "next/server";
 import { getDatabase } from "@infra/database/connection";
 import { getRedisClient } from "@infra/redis/client";
 
-/**
- * Health check endpoint.
- *
- * Verifies that:
- * - The service is running
- * - MongoDB is connected
- * - Redis is connected
- *
- * Returns:
- * - 200 if all systems are healthy
- * - 503 if any system is unhealthy
- *
- * Used by:
- * - Vercel health checks
- * - Monitoring systems (UptimeRobot, etc.)
- * - Load balancers
- */
 export async function GET(): Promise<NextResponse> {
   const checks: Record<string, string> = {
     service: "ok",

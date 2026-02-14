@@ -1,21 +1,8 @@
-/**
- * CORS Middleware
- *
- * Validates Origin header against ALLOWED_ORIGINS and sets appropriate CORS headers.
- * Handles preflight OPTIONS requests.
- */
-
 import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
 
 type RouteHandler = (request: NextRequest) => Promise<Response>;
 
-/**
- * CORS middleware wrapper
- *
- * @param handler - The route handler to wrap
- * @returns Wrapped handler with CORS support
- */
 export function withCors(handler: RouteHandler): RouteHandler {
   return async (request: NextRequest): Promise<Response> => {
     const origin = request.headers.get("origin");

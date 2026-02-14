@@ -4,11 +4,7 @@ import type { RequestContext } from "@app/dtos/auth.dto";
 import { TokenError } from "@domain/errors/token.error";
 import { sha256Hash } from "@infra/crypto/hash";
 
-/**
- * Output DTO for email verification.
- */
 export interface VerifyEmailInput {
-  /** The raw verification token from the URL query parameter */
   token: string;
 }
 
@@ -17,29 +13,6 @@ export interface VerifyEmailOutput {
   message: string;
 }
 
-/**
- * VerifyEmailUseCase — Confirms user's email address ownership.
- *
- * Flow:
- * 1. Hash the incoming token: SHA256(token)
- * 2. Find user by verificationTokenHash
- * 3. Validate the token has not expired (1-hour expiry)
- * 4. Set isVerified = true
- * 5. Clear all verification token fields from user document
- * 6. Emit AUTH_EVENT: EMAIL_VERIFIED
- * 7. Return success
- *
- * Error cases:
- * - Token not found in DB: TokenError("invalid_signature")
- * - Token expired: TokenError("expired")
- * - User already verified: still succeeds (idempotent)
- *
- * Security considerations:
- * - The raw token is NEVER stored in the database. Only the SHA256 hash is stored.
- * - The raw token is sent to the user's email. They present it back via URL.
- * - Even if the database is compromised, the attacker cannot derive valid tokens.
- * - Tokens are one-time use: cleared from the user document after verification.
- */
 export class VerifyEmailUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

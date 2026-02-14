@@ -1,7 +1,7 @@
 ================================================================================
 COMPLETE CODEBASE
 ================================================================================
-Generated: 2026-02-14T11:17:02.431Z
+Generated: 2026-02-14T11:24:44.433Z
 Project: auth
 Total Files: 98
 ================================================================================
@@ -166,16 +166,6 @@ import { JwtServiceImpl } from "@infra/crypto/jwt.service";
 
 const tokenService = new JwtServiceImpl();
 
-/**
- * JWKS endpoint — serves public keys in JWK format.
- *
- * Used by:
- * - The frontend (ankurhalder.com) to verify access tokens locally
- * - Any future service that needs to verify tokens
- *
- * Caching: 24 hours (Cache-Control set via vercel.json headers)
- * CORS: open to all origins (public keys are public)
- */
 export async function GET(): Promise<NextResponse> {
   try {
     const jwks = await tokenService.getJwksData();
@@ -203,14 +193,6 @@ export async function GET(): Promise<NextResponse> {
 --------------------------------------------------------------------------------
 File: app\api\auth\forgot-password\route.ts
 --------------------------------------------------------------------------------
-
-/**
- * Forgot Password Route Handler
- *
- * POST /api/auth/forgot-password
- * Rate limit: 3 requests per hour per IP
- * Middleware: CORS, Rate Limit
- */
 
 import { type NextRequest } from "next/server";
 import { ForgotPasswordUseCase } from "@/application/use-cases/forgot-password.use-case";
@@ -282,13 +264,6 @@ export const POST = withCors(withRateLimit(3, 3600)(forgotPasswordHandler));
 --------------------------------------------------------------------------------
 File: app\api\auth\logout\route.ts
 --------------------------------------------------------------------------------
-
-/**
- * Logout Route Handler
- *
- * POST /api/auth/logout
- * Middleware: CORS, Auth (user level)
- */
 
 import { type NextRequest } from "next/server";
 import { LogoutUseCase } from "@/application/use-cases/logout.use-case";
@@ -366,13 +341,6 @@ export const POST = withCors(withAuth("user")(logoutHandler));
 File: app\api\auth\logout-all\route.ts
 --------------------------------------------------------------------------------
 
-/**
- * Global Logout Route Handler
- *
- * POST /api/auth/logout-all
- * Middleware: CORS, Auth (user level)
- */
-
 import { type NextRequest } from "next/server";
 import { GlobalLogoutUseCase } from "@/application/use-cases/global-logout.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";
@@ -438,13 +406,6 @@ export const POST = withCors(withAuth("user")(logoutAllHandler));
 File: app\api\auth\me\route.ts
 --------------------------------------------------------------------------------
 
-/**
- * Get Current User Route Handler
- *
- * GET /api/auth/me
- * Middleware: CORS, Auth (user level)
- */
-
 import { type NextRequest } from "next/server";
 import { GetCurrentUserUseCase } from "@/application/use-cases/get-current-user.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";
@@ -495,14 +456,6 @@ export const GET = withCors(withAuth("user")(getCurrentUserHandler));
 --------------------------------------------------------------------------------
 File: app\api\auth\refresh\route.ts
 --------------------------------------------------------------------------------
-
-/**
- * Refresh Token Route Handler
- *
- * POST /api/auth/refresh
- * Rate limit: 20 requests per minute per IP
- * Middleware: CORS, Rate Limit
- */
 
 import { type NextRequest } from "next/server";
 import { RefreshTokenUseCase } from "@/application/use-cases/refresh-token.use-case";
@@ -571,14 +524,6 @@ export const POST = withCors(withRateLimit(20, 60)(refreshHandler));
 --------------------------------------------------------------------------------
 File: app\api\auth\resend-verification\route.ts
 --------------------------------------------------------------------------------
-
-/**
- * Resend Verification Route Handler
- *
- * POST /api/auth/resend-verification
- * Rate limit: 5 requests per hour per IP
- * Middleware: CORS, Rate Limit
- */
 
 import { type NextRequest } from "next/server";
 import { ResendVerificationUseCase } from "@/application/use-cases/resend-verification.use-case";
@@ -653,13 +598,6 @@ export const POST = withCors(withRateLimit(5, 3600)(resendVerificationHandler));
 File: app\api\auth\reset-password\route.ts
 --------------------------------------------------------------------------------
 
-/**
- * Reset Password Route Handler
- *
- * POST /api/auth/reset-password
- * Middleware: CORS
- */
-
 import { type NextRequest } from "next/server";
 import { ResetPasswordUseCase } from "@/application/use-cases/reset-password.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";
@@ -732,14 +670,6 @@ export const POST = withCors(resetPasswordHandler);
 --------------------------------------------------------------------------------
 File: app\api\auth\signin\route.ts
 --------------------------------------------------------------------------------
-
-/**
- * Signin Route Handler
- *
- * POST /api/auth/signin
- * Rate limit: 10 requests per 15 minutes per IP
- * Middleware: CORS, Rate Limit
- */
 
 import { type NextRequest } from "next/server";
 import { SigninUseCase } from "@/application/use-cases/signin.use-case";
@@ -845,14 +775,6 @@ export const POST = withCors(withRateLimit(10, 900)(signinHandler));
 File: app\api\auth\signup\route.ts
 --------------------------------------------------------------------------------
 
-/**
- * Signup Route Handler
- *
- * POST /api/auth/signup
- * Rate limit: 5 requests per hour per IP
- * Middleware: CORS, Rate Limit
- */
-
 import { type NextRequest } from "next/server";
 import { SignupUseCase } from "@/application/use-cases/signup.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";
@@ -927,13 +849,6 @@ export const POST = withCors(withRateLimit(5, 3600)(signupHandler));
 File: app\api\auth\verify-email\route.ts
 --------------------------------------------------------------------------------
 
-/**
- * Verify Email Route Handler
- *
- * POST /api/auth/verify-email
- * Middleware: CORS
- */
-
 import { type NextRequest } from "next/server";
 import { VerifyEmailUseCase } from "@/application/use-cases/verify-email.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";
@@ -999,14 +914,6 @@ export const POST = withCors(verifyEmailHandler);
 --------------------------------------------------------------------------------
 File: app\api\auth\verify-otp\route.ts
 --------------------------------------------------------------------------------
-
-/**
- * Verify OTP Route Handler
- *
- * POST /api/auth/verify-otp
- * Rate limit: 10 requests per 15 minutes per IP
- * Middleware: CORS, Rate Limit
- */
 
 import { type NextRequest } from "next/server";
 import { VerifyOtpUseCase } from "@/application/use-cases/verify-otp.use-case";
@@ -1087,16 +994,6 @@ export const POST = withCors(withRateLimit(10, 900)(verifyOtpHandler));
 File: app\api\cron\cleanup\route.ts
 --------------------------------------------------------------------------------
 
-/**
- * Cleanup Cron Job Route Handler
- *
- * POST /api/cron/cleanup
- * Authorization: Bearer {CRON_SECRET}
- *
- * Deletes expired sessions from database.
- * Should be called periodically via Vercel Cron or external scheduler.
- */
-
 import { type NextRequest, NextResponse } from "next/server";
 import { SessionRepositoryImpl } from "@/infrastructure/database/session.repository.impl";
 import { env } from "@/env";
@@ -1142,23 +1039,6 @@ import { NextResponse } from "next/server";
 import { getDatabase } from "@infra/database/connection";
 import { getRedisClient } from "@infra/redis/client";
 
-/**
- * Health check endpoint.
- *
- * Verifies that:
- * - The service is running
- * - MongoDB is connected
- * - Redis is connected
- *
- * Returns:
- * - 200 if all systems are healthy
- * - 503 if any system is unhealthy
- *
- * Used by:
- * - Vercel health checks
- * - Monitoring systems (UptimeRobot, etc.)
- * - Load balancers
- */
 export async function GET(): Promise<NextResponse> {
   const checks: Record<string, string> = {
     service: "ok",
@@ -7631,30 +7511,6 @@ For questions or support:
 File: scripts\crawl-project.js
 --------------------------------------------------------------------------------
 
-#!/usr/bin/env node
-
-/**
- * Project Crawler Script
- *
- * Crawls the entire project directory structure and consolidates all relevant
- * source files into a single complete-codebase.txt file for easy sharing,
- * documentation, or AI analysis.
- *
- * Features:
- * - Skips node_modules, .next, .git, and temp directories
- * - Skips binary files (.pem, .key, .jpg, .png, etc.)
- * - Skips large generated files (package-lock.json, etc.)
- * - Includes directory tree structure
- * - Preserves file structure and formatting
- * - Adds clear file separators
- *
- * Usage:
- *   node scripts/crawl-project.js
- *
- * Output:
- *   complete-codebase.txt in project root
- */
-
 const fs = require("fs");
 const path = require("path");
 
@@ -7731,9 +7587,6 @@ const CONFIG = {
   ],
 };
 
-/**
- * Check if path should be skipped
- */
 function shouldSkip(filePath, stats) {
   const basename = path.basename(filePath);
 
@@ -7768,9 +7621,6 @@ function shouldSkip(filePath, stats) {
   return false;
 }
 
-/**
- * Generate directory tree structure
- */
 function generateTree(dir, prefix = "", isLast = true) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   const filtered = entries.filter((entry) => {
@@ -7796,9 +7646,6 @@ function generateTree(dir, prefix = "", isLast = true) {
   return output;
 }
 
-/**
- * Recursively crawl directory and collect files
- */
 function crawlDirectory(dir, files = []) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
@@ -7819,9 +7666,6 @@ function crawlDirectory(dir, files = []) {
   return files;
 }
 
-/**
- * Read file content safely
- */
 function readFileContent(filePath) {
   try {
     return fs.readFileSync(filePath, "utf8");
@@ -7830,16 +7674,10 @@ function readFileContent(filePath) {
   }
 }
 
-/**
- * Get relative path from root
- */
 function getRelativePath(filePath) {
   return path.relative(CONFIG.rootDir, filePath);
 }
 
-/**
- * Main crawler function
- */
 function crawlProject() {
   console.log("🔍 Starting project crawl...\n");
 
@@ -7923,28 +7761,6 @@ module.exports = { crawlProject };
 File: scripts\pre-commit.js
 --------------------------------------------------------------------------------
 
-#!/usr/bin/env node
-
-/**
- * Pre-commit Hook Script
- *
- * Runs comprehensive validation checks before allowing a commit:
- * 1. Remove comments (optional)
- * 2. Format code (Prettier)
- * 3. Lint code (ESLint with max warnings)
- * 4. Type check (TypeScript)
- * 5. Build project (Next.js)
- * 6. Generate project tree (crawl-project.js)
- * 7. Validate architectural boundaries
- *
- * Usage:
- *   node scripts/pre-commit.js
- *
- * Install as git hook:
- *   npx husky install
- *   npx husky add .husky/pre-commit "node scripts/pre-commit.js"
- */
-
 const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
@@ -7970,24 +7786,15 @@ const CONFIG = {
   skipArchValidation: false,
 };
 
-/**
- * Log with color
- */
 function log(message, color = "reset") {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-/**
- * Log step header
- */
 function logStep(step, total, message) {
   log(`\n[${step}/${total}] ${message}`, "cyan");
   log("─".repeat(60), "cyan");
 }
 
-/**
- * Execute command with error handling
- */
 function exec(command, description) {
   try {
     execSync(command, {
@@ -8002,9 +7809,6 @@ function exec(command, description) {
   }
 }
 
-/**
- * Check if git has staged changes in source files
- */
 function hasStagedSourceChanges() {
   try {
     const output = execSync("git diff --cached --name-only", {
@@ -8023,9 +7827,6 @@ function hasStagedSourceChanges() {
   }
 }
 
-/**
- * Step 1: Remove comments
- */
 async function removeComments() {
   if (CONFIG.skipRemoveComments) {
     log("⊘ Skipping comment removal", "yellow");
@@ -8041,9 +7842,6 @@ async function removeComments() {
   }
 }
 
-/**
- * Step 2: Format code
- */
 async function formatCode() {
   if (CONFIG.skipFormat) {
     log("⊘ Skipping code formatting", "yellow");
@@ -8059,9 +7857,6 @@ async function formatCode() {
   }
 }
 
-/**
- * Step 3: Lint code
- */
 async function lintCode() {
   if (CONFIG.skipLint) {
     log("⊘ Skipping linting", "yellow");
@@ -8071,9 +7866,6 @@ async function lintCode() {
   exec("npx eslint . --max-warnings=0", "ESLint validation");
 }
 
-/**
- * Step 4: Type check
- */
 async function typeCheck() {
   if (CONFIG.skipTypeCheck) {
     log("⊘ Skipping type check", "yellow");
@@ -8083,9 +7875,6 @@ async function typeCheck() {
   exec("npm run type-check", "TypeScript type checking");
 }
 
-/**
- * Step 5: Build project
- */
 async function buildProject() {
   if (CONFIG.skipBuild) {
     log("⊘ Skipping build", "yellow");
@@ -8100,9 +7889,6 @@ async function buildProject() {
   exec("npm run build", "Next.js build");
 }
 
-/**
- * Step 6: Generate project tree
- */
 async function generateProjectTree() {
   if (CONFIG.skipCrawl) {
     log("⊘ Skipping project crawl", "yellow");
@@ -8118,9 +7904,6 @@ async function generateProjectTree() {
   }
 }
 
-/**
- * Step 7: Validate architectural boundaries
- */
 async function validateArchitecturalBoundaries() {
   if (CONFIG.skipArchValidation) {
     log("⊘ Skipping architectural validation", "yellow");
@@ -8223,9 +8006,6 @@ async function validateArchitecturalBoundaries() {
   log("✓ No architectural boundary violations", "green");
 }
 
-/**
- * Main pre-commit function
- */
 async function preCommit() {
   const startTime = Date.now();
 
@@ -8313,31 +8093,12 @@ module.exports = { preCommit };
 File: scripts\remove_comments.js
 --------------------------------------------------------------------------------
 
-#!/usr/bin/env node
-
-/**
- * Remove Comments Script
- *
- * Removes comments from TypeScript and JavaScript files while preserving:
- * - @ts-expect-error, @ts-ignore, @ts-nocheck directives
- * - ESLint disable comments
- * - TODO, FIXME, NOTE comments
- * - JSDoc comments (optional)
- *
- * Usage:
- *   node scripts/remove_comments.js
- *
- * This script processes:
- * - .ts, .tsx, .js, .jsx, .mjs, .cjs files
- * - Excludes: node_modules, .next, .git, type declaration files
- */
-
 const fs = require("fs");
 const path = require("path");
 
 const CONFIG = {
   rootDir: path.join(__dirname, ".."),
-
+  targetDirs: ["src", "app", "scripts"],
   skipDirs: [
     "node_modules",
     ".next",
@@ -8349,34 +8110,36 @@ const CONFIG = {
     ".vercel",
     ".husky",
   ],
-
-  extensions: [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"],
-
+  srcExtensions: [".ts", ".tsx"],
+  appExtensions: [".ts", ".tsx"],
+  scriptExtensions: [".js", ".mjs"],
   excludeFiles: ["next-env.d.ts"],
-
-  preserve: [
+  preservePatterns: [
     "@ts-expect-error",
     "@ts-ignore",
     "@ts-nocheck",
+    "@deprecated",
+    "@internal",
     "eslint-disable",
     "eslint-enable",
+    "eslint-disable-next-line",
     "prettier-ignore",
-    "TODO:",
-    "FIXME:",
-    "NOTE:",
-    "HACK:",
-    "XXX:",
-    "IMPORTANT:",
+    "prettier-disable",
+    "prettier-enable",
+    "TODO",
+    "FIXME",
+    "HACK",
+    "XXX",
+    "NOTE",
+    "IMPORTANT",
   ],
-
-  preserveJSDoc: true,
-
   dryRun: false,
 };
 
-/**
- * Check if file should be processed
- */
+function shouldSkipDir(dirName) {
+  return CONFIG.skipDirs.includes(dirName) || dirName.startsWith("tmpclaude-");
+}
+
 function shouldProcess(filePath) {
   const basename = path.basename(filePath);
 
@@ -8389,53 +8152,55 @@ function shouldProcess(filePath) {
   }
 
   const ext = path.extname(filePath);
-  return CONFIG.extensions.includes(ext);
+  const relPath = path.relative(CONFIG.rootDir, filePath);
+  const isInSrc = relPath.startsWith("src");
+  const isInApp = relPath.startsWith("app");
+  const isInScripts = relPath.startsWith("scripts");
+
+  if (isInSrc || isInApp) {
+    return (
+      CONFIG.srcExtensions.includes(ext) || CONFIG.appExtensions.includes(ext)
+    );
+  }
+
+  if (isInScripts) {
+    return CONFIG.scriptExtensions.includes(ext);
+  }
+
+  return false;
 }
 
-/**
- * Check if directory should be skipped
- */
-function shouldSkipDir(dirName) {
-  return CONFIG.skipDirs.includes(dirName) || dirName.startsWith("tmpclaude-");
-}
-
-/**
- * Check if comment should be preserved
- */
 function shouldPreserveComment(comment) {
-  return CONFIG.preserve.some((pattern) => comment.includes(pattern));
+  return CONFIG.preservePatterns.some((pattern) => comment.includes(pattern));
 }
 
-/**
- * Check if comment is JSDoc
- */
-function isJSDocComment(comment) {
-  return comment.trim().startsWith("/**") && comment.trim().includes("*/");
-}
-
-/**
- * Remove comments from code
- */
 function removeComments(code) {
   let result = "";
   let i = 0;
 
   while (i < code.length) {
-    if (code[i] === '"' || code[i] === "'" || code[i] === "`") {
-      const quote = code[i];
-      result += code[i++];
+    const char = code[i];
+
+    if (char === '"' || char === "'" || char === "`") {
+      const quote = char;
+      result += char;
+      i++;
 
       while (i < code.length) {
         if (code[i] === "\\") {
-          result += code[i++];
+          result += code[i];
+          i++;
           if (i < code.length) {
-            result += code[i++];
+            result += code[i];
+            i++;
           }
         } else if (code[i] === quote) {
-          result += code[i++];
+          result += code[i];
+          i++;
           break;
         } else {
-          result += code[i++];
+          result += code[i];
+          i++;
         }
       }
       continue;
@@ -8443,6 +8208,7 @@ function removeComments(code) {
 
     if (code[i] === "/" && i + 1 < code.length && code[i + 1] === "*") {
       let comment = "";
+      let startPos = i;
       let j = i;
 
       while (j < code.length) {
@@ -8457,15 +8223,11 @@ function removeComments(code) {
 
       if (shouldPreserveComment(comment)) {
         result += comment;
-        i = j;
-      } else if (CONFIG.preserveJSDoc && isJSDocComment(comment)) {
-        result += comment;
-        i = j;
       } else {
         const newlines = (comment.match(/\n/g) || []).length;
         result += "\n".repeat(newlines);
-        i = j;
       }
+      i = j;
       continue;
     }
 
@@ -8474,122 +8236,182 @@ function removeComments(code) {
       let j = i;
 
       while (j < code.length && code[j] !== "\n") {
-        comment += code[j++];
+        comment += code[j];
+        j++;
       }
 
       if (shouldPreserveComment(comment)) {
         result += comment;
-        if (j < code.length) {
-          result += code[j++];
+        if (j < code.length && code[j] === "\n") {
+          result += "\n";
+          j++;
         }
-        i = j;
       } else {
-        i = j;
-        if (i < code.length && code[i] === "\n") {
-          result += code[i++];
+        if (j < code.length && code[j] === "\n") {
+          j++;
         }
       }
+      i = j;
       continue;
     }
 
-    result += code[i++];
+    result += char;
+    i++;
   }
 
   return result;
 }
 
-/**
- * Process a single file
- */
+function removeEmptyLines(code) {
+  const lines = code.split("\n");
+  const result = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (trimmed === "") {
+      if (i === 0 || i === lines.length - 1) {
+        if (i === 0) {
+          result.push(line);
+        } else {
+          result.push(line);
+        }
+      } else {
+        if (result.length > 0 && result[result.length - 1].trim() !== "") {
+          result.push(line);
+        }
+      }
+    } else {
+      result.push(line);
+    }
+  }
+
+  while (result.length > 0 && result[result.length - 1].trim() === "") {
+    result.pop();
+  }
+
+  return result.join("\n");
+}
+
 function processFile(filePath) {
   try {
     const originalCode = fs.readFileSync(filePath, "utf8");
-    const processedCode = removeComments(originalCode);
+    let processedCode = removeComments(originalCode);
+    processedCode = removeEmptyLines(processedCode);
 
     if (originalCode === processedCode) {
       return { modified: false };
     }
 
-    const originalLines = originalCode.split("\n").length;
-    const processedLines = processedCode.split("\n").length;
-    const linesRemoved = originalLines - processedLines;
+    const originalComments = (
+      originalCode.match(/\/\*[\s\S]*?\*\/|\/\/.*/g) || []
+    ).filter((c) => !shouldPreserveComment(c)).length;
 
     if (!CONFIG.dryRun) {
       fs.writeFileSync(filePath, processedCode, "utf8");
     }
 
-    return { modified: true, linesRemoved };
+    return { modified: true, commentsRemoved: originalComments };
   } catch (error) {
     return { error: error.message };
   }
 }
 
-/**
- * Recursively process directory
- */
-function processDirectory(
-  dir,
-  stats = { processed: 0, modified: 0, errors: 0 }
-) {
+function getFileList(dir, extensions, baseDir = "") {
+  const files = [];
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
+    const relativePath = baseDir ? path.join(baseDir, entry.name) : entry.name;
 
     if (entry.isDirectory()) {
       if (!shouldSkipDir(entry.name)) {
-        processDirectory(fullPath, stats);
+        files.push(...getFileList(fullPath, extensions, relativePath));
       }
-    } else if (entry.isFile() && shouldProcess(fullPath)) {
-      const result = processFile(fullPath);
-      stats.processed++;
+    } else if (entry.isFile()) {
+      const ext = path.extname(fullPath);
+      if (extensions.includes(ext) && shouldProcess(fullPath)) {
+        files.push(fullPath);
+      }
+    }
+  }
 
-      if (result.error) {
-        console.error(
-          `   ✗ ${path.relative(CONFIG.rootDir, fullPath)}: ${result.error}`
-        );
-        stats.errors++;
-      } else if (result.modified) {
-        console.log(`   ✓ ${path.relative(CONFIG.rootDir, fullPath)}`);
-        stats.modified++;
-      }
+  return files;
+}
+
+function processDirectory(dir) {
+  const stats = {
+    processed: 0,
+    modified: 0,
+    errors: 0,
+    commentsRemoved: 0,
+    modifiedFiles: [],
+  };
+
+  const srcDir = path.join(dir, "src");
+  const appDir = path.join(dir, "app");
+  const scriptsDir = path.join(dir, "scripts");
+
+  const filesToProcess = [];
+
+  if (fs.existsSync(srcDir)) {
+    filesToProcess.push(...getFileList(srcDir, CONFIG.srcExtensions));
+  }
+
+  if (fs.existsSync(appDir)) {
+    filesToProcess.push(...getFileList(appDir, CONFIG.appExtensions));
+  }
+
+  if (fs.existsSync(scriptsDir)) {
+    filesToProcess.push(...getFileList(scriptsDir, CONFIG.scriptExtensions));
+  }
+
+  for (const filePath of filesToProcess) {
+    const result = processFile(filePath);
+    stats.processed++;
+
+    if (result.error) {
+      console.log(`   ✗ ${path.relative(dir, filePath)}: ${result.error}`);
+      stats.errors++;
+    } else if (result.modified) {
+      const relPath = path.relative(dir, filePath);
+      console.log(`   ✓ ${relPath}`);
+      stats.modified++;
+      stats.commentsRemoved += result.commentsRemoved || 0;
+      stats.modifiedFiles.push(relPath);
     }
   }
 
   return stats;
 }
 
-/**
- * Main function
- */
 function main() {
-  console.log("🧹 Removing comments from source files...\n");
+  console.log("Removing comments from source files...\n");
 
   if (CONFIG.dryRun) {
-    console.log("⚠️  DRY RUN MODE - No files will be modified\n");
+    console.log("DRY RUN MODE - No files will be modified\n");
   }
 
   const startTime = Date.now();
-
   const stats = processDirectory(CONFIG.rootDir);
-
   const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
-  console.log("\n✅ Comment removal complete!");
-  console.log(`   Files processed: ${stats.processed}`);
-  console.log(`   Files modified: ${stats.modified}`);
-  console.log(`   Errors: ${stats.errors}`);
-  console.log(`   Duration: ${duration}s\n`);
+  console.log("\nComment removal complete!");
+  console.log(`Files processed: ${stats.processed}`);
+  console.log(`Files modified: ${stats.modified}`);
+  console.log(`Comments removed: ${stats.commentsRemoved}`);
+  console.log(`Errors: ${stats.errors}`);
+  console.log(`Duration: ${duration}s\n`);
 
-  if (CONFIG.preserveJSDoc) {
-    console.log("ℹ️  JSDoc comments were preserved");
+  if (stats.modified > 0) {
+    console.log("Modified files:");
+    stats.modifiedFiles.forEach((file) => {
+      console.log(`  - ${file}`);
+    });
+    console.log();
   }
-
-  console.log("ℹ️  Preserved comments:");
-  CONFIG.preserve.forEach((pattern) => {
-    console.log(`   - ${pattern}`);
-  });
-  console.log();
 
   if (stats.errors > 0) {
     process.exit(1);
@@ -8600,7 +8422,7 @@ if (require.main === module) {
   try {
     main();
   } catch (error) {
-    console.error("\n❌ Error removing comments:", error.message);
+    console.error("Error removing comments:", error.message);
     console.error(error.stack);
     process.exit(1);
   }
@@ -8612,14 +8434,6 @@ module.exports = { removeComments, processFile };
 --------------------------------------------------------------------------------
 File: src\application\dtos\auth.dto.ts
 --------------------------------------------------------------------------------
-
-/**
- * Input/Output DTOs for authentication use cases.
- *
- * DTOs cross layer boundaries. They are plain objects (no methods, no validation).
- * Validation is performed by Zod schemas in the Presentation Layer before
- * the data reaches the use case.
- */
 
 export interface SignupInput {
   email: string;
@@ -8638,11 +8452,6 @@ export interface SigninInput {
   rememberMe?: boolean;
 }
 
-/**
- * Signin has two possible outcomes:
- * 1. Standard user: authenticated immediately, tokens set
- * 2. Admin user: OTP required, no tokens yet
- */
 export interface SigninOutputAuthenticated {
   isAuthenticated: true;
   requiresOtp: false;
@@ -8652,9 +8461,9 @@ export interface SigninOutputAuthenticated {
     role: "admin" | "user";
     tier: "free" | "pro";
   };
-  /** Access token string (also set as cookie) */
+
   accessToken: string;
-  /** Refresh token string (also set as cookie) */
+
   refreshToken: string;
 }
 
@@ -8714,16 +8523,11 @@ export interface GlobalLogoutOutput {
   sessionsRevoked: number;
 }
 
-/**
- * Request context passed to all use cases for audit logging.
- * Extracted from the HTTP request by the presentation layer.
- */
 export interface RequestContext {
-  /** Unique request ID (UUID v4) for tracing */
   requestId: string;
-  /** Client IP address */
+
   ipAddress: string;
-  /** Raw User-Agent header */
+
   userAgent: string;
 }
 
@@ -8732,10 +8536,6 @@ export interface RequestContext {
 File: src\application\dtos\user.dto.ts
 --------------------------------------------------------------------------------
 
-/**
- * Public user data returned by GetCurrentUser.
- * Explicitly excludes sensitive fields.
- */
 export interface CurrentUserOutput {
   id: string;
   email: string;
@@ -8750,46 +8550,13 @@ export interface CurrentUserOutput {
 File: src\application\interfaces\email.provider.ts
 --------------------------------------------------------------------------------
 
-/**
- * Port: Email sending service.
- *
- * Defines the contract that any email provider must implement.
- * The Application Layer depends on this interface, not on Brevo directly.
- * This enables testing with mock providers and swapping providers later.
- */
 export interface IEmailProvider {
-  /**
-   * Send a verification email.
-   *
-   * @param to Recipient email address
-   * @param token Raw verification token (NOT hashed — the URL needs the raw token)
-   */
   sendVerificationEmail(to: string, token: string): Promise<void>;
 
-  /**
-   * Send an OTP email (admin only).
-   *
-   * @param to Admin email address
-   * @param otp The 8-digit OTP code (plaintext)
-   */
   sendOtpEmail(to: string, otp: string): Promise<void>;
 
-  /**
-   * Send a password reset email.
-   *
-   * @param to Recipient email address
-   * @param token Raw password reset token
-   */
   sendPasswordResetEmail(to: string, token: string): Promise<void>;
 
-  /**
-   * Forward a contact form submission to the admin.
-   *
-   * @param from Sender's email address
-   * @param name Sender's name
-   * @param subject Email subject
-   * @param message Email body content
-   */
   sendContactFormEmail(
     from: string,
     name: string,
@@ -8803,68 +8570,17 @@ export interface IEmailProvider {
 File: src\application\interfaces\revocation.store.ts
 --------------------------------------------------------------------------------
 
-/**
- * Port: Token revocation storage.
- *
- * Implements distributed session revocation using Redis.
- * Three granularity levels:
- * 1. Individual token (by JTI) — for single-token revocation
- * 2. Session (by sessionId) — for single-device logout
- * 3. User (by userId + timestamp) — for all-devices logout
- *
- * All revocations have a TTL matching the maximum token lifetime to
- * ensure the Redis database doesn't grow unbounded.
- */
 export interface IRevocationStore {
-  /**
-   * Revoke an individual token by its JTI (JWT ID).
-   *
-   * @param jti The JWT ID (128-bit hex string)
-   * @param ttlSeconds Time-to-live — should match the token's remaining lifetime
-   */
   revokeToken(jti: string, ttlSeconds: number): Promise<void>;
 
-  /**
-   * Check if a token has been revoked by JTI.
-   *
-   * @param jti The JWT ID to check
-   * @returns true if the token is revoked
-   */
   isTokenRevoked(jti: string): Promise<boolean>;
 
-  /**
-   * Revoke an entire session (all tokens with this sessionId).
-   *
-   * @param sessionId The session UUID
-   * @param ttlSeconds Time-to-live (typically 7 days for sessions)
-   */
   revokeSession(sessionId: string, ttlSeconds: number): Promise<void>;
 
-  /**
-   * Check if a session has been revoked.
-   *
-   * @param sessionId The session UUID to check
-   * @returns true if the session is revoked
-   */
   isSessionRevoked(sessionId: string): Promise<boolean>;
 
-  /**
-   * Revoke all sessions for a user (timestamp-based).
-   *
-   * Stores the current timestamp. Any token issued BEFORE this timestamp
-   * is considered revoked.
-   *
-   * @param userId The user ID
-   * @param ttlSeconds Time-to-live (typically 30 days for max token lifetime)
-   */
   revokeAllUserSessions(userId: string, ttlSeconds: number): Promise<void>;
 
-  /**
-   * Get the user-level revocation timestamp.
-   *
-   * @param userId The user ID
-   * @returns The revocation timestamp (Unix milliseconds), or null if no revocation
-   */
   getUserRevocationTimestamp(userId: string): Promise<number | null>;
 }
 
@@ -8873,64 +8589,45 @@ export interface IRevocationStore {
 File: src\application\interfaces\token.service.ts
 --------------------------------------------------------------------------------
 
-/**
- * JWT payload structure for access tokens.
- */
 export interface AccessTokenPayload {
-  /** User ID (MongoDB ObjectId as string) */
   sub: string;
-  /** User email */
+
   email: string;
-  /** User role */
+
   role: "admin" | "user";
-  /** Session UUID */
+
   sessionId: string;
-  /** JWT ID (128-bit hex) for individual revocation */
+
   jti: string;
-  /** Token version — must match user.tokenVersion */
+
   tv: number;
-  /** Issued-at (Unix seconds) */
+
   iat: number;
-  /** Expiry (Unix seconds) */
+
   exp: number;
 }
 
-/**
- * JWT payload structure for refresh tokens.
- */
 export interface RefreshTokenPayload {
-  /** User ID */
   sub: string;
-  /** Session UUID */
+
   sessionId: string;
-  /** JWT ID for individual revocation */
+
   jti: string;
-  /** Token version */
+
   tv: number;
-  /** Issued-at */
+
   iat: number;
-  /** Expiry */
+
   exp: number;
 }
 
-/**
- * Result of token generation: both the raw JWT string and its JTI.
- */
 export interface GeneratedToken {
-  /** The signed JWT string */
   token: string;
-  /** The JTI embedded in the token */
+
   jti: string;
 }
 
-/**
- * Port: JWT token service.
- * Handles signing (private key) and verification (public key).
- */
 export interface ITokenService {
-  /**
-   * Generate an access token (15 min TTL).
-   */
   generateAccessToken(payload: {
     userId: string;
     email: string;
@@ -8939,10 +8636,6 @@ export interface ITokenService {
     tokenVersion: number;
   }): Promise<GeneratedToken>;
 
-  /**
-   * Generate a refresh token.
-   * @param ttlSeconds 604800 (7 days) or 2592000 (30 days for rememberMe)
-   */
   generateRefreshToken(payload: {
     userId: string;
     sessionId: string;
@@ -8950,28 +8643,13 @@ export interface ITokenService {
     ttlSeconds: number;
   }): Promise<GeneratedToken>;
 
-  /**
-   * Verify an access token.
-   * Returns the payload if valid, null if invalid for ANY reason.
-   * MUST NOT throw — returns null on all failures.
-   */
   verifyAccessToken(token: string): Promise<AccessTokenPayload | null>;
 
-  /**
-   * Verify a refresh token.
-   * Returns the payload if valid, null if invalid.
-   */
   verifyRefreshToken(token: string): Promise<RefreshTokenPayload | null>;
 
-  /**
-   * Get JWKS data for the /.well-known/jwks.json endpoint.
-   */
   getJwksData(): Promise<JsonWebKeySet>;
 }
 
-/**
- * Standard JWKS response format.
- */
 export interface JsonWebKeySet {
   keys: JsonWebKey[];
 }
@@ -8997,9 +8675,6 @@ import type { RequestContext } from "@app/dtos/auth.dto";
 import { generateRandomToken, sha256Hash } from "@infra/crypto/hash";
 import { encryptOtp } from "@infra/crypto/otp.service";
 
-/**
- * Input/Output DTOs for forgot password.
- */
 export interface ForgotPasswordInput {
   email: string;
 }
@@ -9009,34 +8684,8 @@ export interface ForgotPasswordOutput {
   message: string;
 }
 
-/** Password reset token expiry: 1 hour */
 const RESET_TOKEN_EXPIRY_MS = 60 * 60 * 1000;
 
-/**
- * ForgotPasswordUseCase — Initiates the password reset flow.
- *
- * CRITICAL SECURITY RULE:
- * This endpoint ALWAYS returns the same response, whether the email exists
- * in the database or not. This prevents email enumeration attacks.
- *
- * Flow:
- * 1. Normalize email to lowercase
- * 2. Look up user by email
- * 3. If user NOT found: log the attempt, return generic success (STOP)
- * 4. If user found:
- *    a. Generate a cryptographically random reset token (32 bytes = 64 hex)
- *    b. Compute SHA256(token) for indexed storage
- *    c. Encrypt the raw token with AES-256-CBC for storage
- *    d. Store hash + encrypted token + expiry on user document
- *    e. Send password reset email (fire-and-forget) with raw token in URL
- *    f. Emit audit event
- * 5. Return generic success message
- *
- * Why store both hash AND encrypted token?
- * - Hash: enables O(1) indexed lookup when the user clicks the reset link
- * - Encrypted token: enables re-sending the same reset link if needed
- *   (without generating a new token and invalidating the old one)
- */
 export class ForgotPasswordUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -9122,37 +8771,10 @@ import type { IUserRepository } from "@domain/repositories/user.repository";
 import type { CurrentUserOutput } from "@app/dtos/user.dto";
 import { NotFoundError } from "@domain/errors/not-found.error";
 
-/**
- * Input DTO for get current user.
- */
 export interface GetCurrentUserInput {
-  /** User ID extracted from the verified access token */
   userId: string;
 }
 
-/**
- * GetCurrentUserUseCase — Returns the current user's profile data.
- *
- * This is the simplest use case. It:
- * 1. Fetches the user from the database by ID
- * 2. Returns only public-safe fields
- *
- * The access token has already been verified by the auth middleware
- * (all 8 verification steps including DB user fetch for tokenVersion check).
- * However, we still fetch the user here to ensure we return the most
- * up-to-date data (the middleware's user object may be stale if the
- * request was queued).
- *
- * SECURITY: The output explicitly EXCLUDES:
- * - hashedPassword
- * - verificationToken / verificationTokenHash
- * - passwordResetToken / passwordResetTokenHash
- * - otpSecret
- * - tokenVersion (internal implementation detail)
- * - Any other internal fields
- *
- * Only id, email, role, tier, isVerified, and createdAt are returned.
- */
 export class GetCurrentUserUseCase {
   constructor(private readonly userRepository: IUserRepository) {}
 
@@ -9191,32 +8813,8 @@ import type {
 import { NotFoundError } from "@domain/errors/not-found.error";
 import { UserMethods } from "@domain/entities/user.entity";
 
-/** User revocation TTL: 30 days (matches max token lifetime with rememberMe) */
 const USER_REVOCATION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-/**
- * GlobalLogoutUseCase — Signs out all sessions for a user.
- *
- * This is the nuclear option. Used for:
- * - User-initiated "sign out everywhere"
- * - Admin-forced account lockout
- * - Post-compromise recovery
- *
- * Flow:
- * 1. Fetch user, verify exists
- * 2. Increment user.tokenVersion in DB
- *    (this invalidates all existing JWTs: their `tv` claim no longer matches)
- * 3. Revoke all user sessions in Redis (timestamp-based: any token issued before
- *    this timestamp is considered revoked)
- * 4. Delete all sessions for user from MongoDB
- * 5. Clear auth cookies (done by presentation layer)
- * 6. Emit audit event
- *
- * Three-pronged invalidation:
- * - tokenVersion increment: invalidates tokens on DB-check (refresh, /me)
- * - Redis user revocation: invalidates tokens on revocation-check (every request)
- * - Session deletion: prevents future refresh using existing refresh tokens
- */
 export class GlobalLogoutUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -9282,26 +8880,8 @@ import type {
   RequestContext,
 } from "@app/dtos/auth.dto";
 
-/** Session revocation TTL: 7 days (matches max session duration) */
 const SESSION_REVOCATION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-/**
- * LogoutUseCase — Signs out the current session.
- *
- * Flow:
- * 1. Revoke the session in Redis (so any existing access tokens are invalidated)
- * 2. Delete the session from MongoDB
- * 3. Clear auth cookies (done by presentation layer)
- * 4. Emit audit event
- *
- * Why both Redis revocation AND MongoDB deletion?
- * - Redis revocation: immediately invalidates any access tokens still in flight
- *   (access tokens are not checked against MongoDB on every request — only
- *   on refresh. Redis revocation catches the in-between.)
- * - MongoDB deletion: removes the refresh token capability permanently
- *
- * Cookie clearing is handled by the presentation layer (route handler).
- */
 export class LogoutUseCase {
   constructor(
     private readonly sessionRepository: ISessionRepository,
@@ -9358,37 +8938,8 @@ import type {
 import { TokenError } from "@domain/errors/token.error";
 import { sha256Hash } from "@infra/crypto/hash";
 
-/** Default new session TTL: 7 days */
 const DEFAULT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-/**
- * RefreshTokenUseCase — Rotates a refresh token and issues new access + refresh tokens.
- *
- * This is the most security-critical use case because:
- * 1. It extends the user's session without re-authentication
- * 2. It must handle token replay attacks (same refresh token used twice)
- * 3. It must atomically delete the old session and create a new one
- *
- * Flow:
- * 1. Hash the incoming refresh token: SHA256(refreshToken)
- * 2. Atomically find and delete the session by hash (findOneAndDelete)
- * 3. Verify the refresh JWT signature and claims
- * 4. Verify user exists, is verified, and tokenVersion matches
- * 5. Generate new session (new sessionId, new tokens)
- * 6. Store new session with new hashed refresh token
- * 7. Set new cookies (done by presentation layer)
- *
- * Replay detection:
- * - If step 2 returns null (session not found), it means either:
- *   a) The token was already used (session was already deleted)
- *   b) The token was never valid
- * - In either case, return TokenError (client must re-authenticate)
- *
- * Why findOneAndDelete?
- * - Atomic: prevents TOCTOU race conditions
- * - If two refresh requests arrive simultaneously with the same token,
- *   only ONE can find-and-delete the session. The other gets null.
- */
 export class RefreshTokenUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -9545,9 +9096,6 @@ import { ValidationError } from "@domain/errors/validation.error";
 import { generateRandomToken, sha256Hash } from "@infra/crypto/hash";
 import { encryptOtp } from "@infra/crypto/otp.service";
 
-/**
- * Input/Output DTOs for resend verification.
- */
 export interface ResendVerificationInput {
   email: string;
 }
@@ -9557,36 +9105,8 @@ export interface ResendVerificationOutput {
   message: string;
 }
 
-/** Verification token expiry: 1 hour */
 const VERIFICATION_TOKEN_EXPIRY_MS = 60 * 60 * 1000;
 
-/**
- * ResendVerificationUseCase — Sends a new verification email.
- *
- * This use case is for users who:
- * - Never received the original verification email
- * - Had their verification link expire
- * - Accidentally deleted the email
- *
- * Flow:
- * 1. Find user by email
- * 2. If user not found: return generic success (prevents enumeration)
- * 3. If user already verified: return error (no point in reverifying)
- * 4. Generate a NEW verification token (invalidates any previous one)
- * 5. Store hash + encrypted token + new expiry
- * 6. Send verification email (fire-and-forget)
- * 7. Emit audit event
- * 8. Return success
- *
- * Rate limiting:
- * This endpoint is rate-limited to 3 requests per hour per IP
- * (handled by the presentation layer's rate limit middleware).
- *
- * SECURITY:
- * - Generating a new token invalidates the old one
- *   (the old hash is overwritten in the DB, so the old link no longer works)
- * - The response is generic when user not found (prevents enumeration)
- */
 export class ResendVerificationUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -9675,13 +9195,9 @@ import {
 } from "@infra/crypto/password.service";
 import { sha256Hash } from "@infra/crypto/hash";
 
-/**
- * Input/Output DTOs for password reset.
- */
 export interface ResetPasswordInput {
-  /** The raw reset token from the URL query parameter */
   token: string;
-  /** The new password chosen by the user */
+
   newPassword: string;
 }
 
@@ -9690,33 +9206,8 @@ export interface ResetPasswordOutput {
   message: string;
 }
 
-/** User revocation TTL: 30 days (matches max token lifetime) */
 const USER_REVOCATION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-/**
- * ResetPasswordUseCase — Completes the password reset flow.
- *
- * This is a high-security operation because it:
- * 1. Changes the user's password (authentication factor)
- * 2. Triggers a global logout (all existing sessions become invalid)
- * 3. Increments the tokenVersion (all existing JWTs become invalid)
- *
- * Flow:
- * 1. Hash the incoming token: SHA256(token)
- * 2. Find user by passwordResetTokenHash
- * 3. Check token not expired (1 hour)
- * 4. Validate new password complexity
- * 5. Hash new password with bcrypt(12)
- * 6. Update password in DB
- * 7. Increment tokenVersion (invalidates all existing JWTs)
- * 8. Clear password reset token fields
- * 9. Revoke all user sessions in Redis
- * 10. Delete all sessions from MongoDB
- * 11. Emit audit event
- *
- * After this operation, the user must sign in again with their new password.
- * All previous sessions on all devices are terminated.
- */
 export class ResetPasswordUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -9854,25 +9345,10 @@ import {
 } from "@infra/crypto/otp.service";
 import { checkOtpRateLimit } from "@infra/redis/otp-rate-limiter";
 
-/** Default session duration: 7 days */
 const DEFAULT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-/** RememberMe session duration: 30 days */
 const REMEMBER_ME_SESSION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-/**
- * SigninUseCase — Authenticates a user.
- *
- * Two paths:
- * A) Standard user: verify credentials -> create session -> return tokens
- * B) Admin user: verify credentials -> generate OTP -> send email -> return { requiresOtp: true }
- *
- * Security behaviors:
- * - Unverified users cannot sign in
- * - Generic "Invalid credentials" error prevents user enumeration
- * - PBKDF2 legacy hashes are auto-migrated to bcrypt on success
- * - Admin OTP has escalating backoff rate limiting
- */
 export class SigninUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -9962,9 +9438,6 @@ export class SigninUseCase {
     return this.handleStandardSignin(user, input.rememberMe ?? false, ctx);
   }
 
-  /**
-   * Admin sign-in: generate and send OTP, require second factor.
-   */
   private async handleAdminSignin(
     user: {
       id: string;
@@ -10032,9 +9505,6 @@ export class SigninUseCase {
     };
   }
 
-  /**
-   * Standard user sign-in: create session in DB, generate JWT tokens.
-   */
   private async handleStandardSignin(
     user: {
       id: string;
@@ -10130,26 +9600,6 @@ import {
 import { generateRandomToken, sha256Hash } from "@infra/crypto/hash";
 import { encryptOtp } from "@infra/crypto/otp.service";
 
-/**
- * SignupUseCase — Registers a new user.
- *
- * Flow:
- * 1. Validate password complexity (8+ chars, upper, lower, digit, special)
- * 2. Check if email is already registered
- * 3. Hash password with bcrypt(12)
- * 4. Generate verification token (32 random bytes = 64 hex chars)
- * 5. Store SHA256(token) on user for indexed lookup
- * 6. Store AES-encrypted token for email sending
- * 7. Create user in DB with tokenVersion: 0, tier: "free", isVerified: false
- * 8. Send verification email (fire-and-forget)
- * 9. Emit AUTH_EVENT: SIGNUP
- * 10. Return success message
- *
- * Error cases:
- * - Weak password: ValidationError (400)
- * - Duplicate email: ConflictError (409)
- * - Database failure: unhandled (500)
- */
 export class SignupUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -10233,11 +9683,7 @@ import type { RequestContext } from "@app/dtos/auth.dto";
 import { TokenError } from "@domain/errors/token.error";
 import { sha256Hash } from "@infra/crypto/hash";
 
-/**
- * Output DTO for email verification.
- */
 export interface VerifyEmailInput {
-  /** The raw verification token from the URL query parameter */
   token: string;
 }
 
@@ -10246,29 +9692,6 @@ export interface VerifyEmailOutput {
   message: string;
 }
 
-/**
- * VerifyEmailUseCase — Confirms user's email address ownership.
- *
- * Flow:
- * 1. Hash the incoming token: SHA256(token)
- * 2. Find user by verificationTokenHash
- * 3. Validate the token has not expired (1-hour expiry)
- * 4. Set isVerified = true
- * 5. Clear all verification token fields from user document
- * 6. Emit AUTH_EVENT: EMAIL_VERIFIED
- * 7. Return success
- *
- * Error cases:
- * - Token not found in DB: TokenError("invalid_signature")
- * - Token expired: TokenError("expired")
- * - User already verified: still succeeds (idempotent)
- *
- * Security considerations:
- * - The raw token is NEVER stored in the database. Only the SHA256 hash is stored.
- * - The raw token is sent to the user's email. They present it back via URL.
- * - Even if the database is compromised, the attacker cannot derive valid tokens.
- * - Tokens are one-time use: cleared from the user document after verification.
- */
 export class VerifyEmailUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -10379,25 +9802,8 @@ import { verifyOtp } from "@infra/crypto/otp.service";
 import { sha256Hash } from "@infra/crypto/hash";
 import { resetOtpRateLimit } from "@infra/redis/otp-rate-limiter";
 
-/** Admin sessions default to 7 days (no rememberMe for admin OTP flow) */
 const ADMIN_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-/**
- * VerifyOtpUseCase — Completes the admin two-factor authentication flow.
- *
- * Flow:
- * 1. Find user by email
- * 2. Check OTP preconditions (exists, not expired, not max attempts)
- * 3. Decrypt stored OTP and compare (timing-safe)
- * 4. If valid: create session, generate tokens, clear OTP fields, reset rate limit
- * 5. If invalid: increment attempts, check for lockout
- *
- * Security:
- * - Maximum 5 attempts per OTP
- * - 15-minute OTP expiry
- * - Timing-safe comparison (constant-time regardless of how many digits match)
- * - OTP fields cleared after successful verification
- */
 export class VerifyOtpUseCase {
   constructor(
     private readonly userRepository: IUserRepository,
@@ -10560,9 +9966,6 @@ export class VerifyOtpUseCase {
 File: src\domain\entities\auth-event.entity.ts
 --------------------------------------------------------------------------------
 
-/**
- * All event types tracked by the audit log.
- */
 export type AuthEventType =
   | "SIGNUP"
   | "SIGNIN"
@@ -10586,64 +9989,31 @@ export type AuthEventType =
   | "SESSION_REVOKED"
   | "SUSPICIOUS_ACTIVITY";
 
-/**
- * AuthEvent entity. Represents a single auditable authentication event.
- *
- * Events are written fire-and-forget: failures to write an audit event
- * MUST NOT block or fail the primary auth operation.
- *
- * Events are auto-deleted after 90 days via TTL index on the `timestamp` field.
- */
 export interface AuthEventEntity {
-  /** MongoDB ObjectId as string */
   readonly id: string;
 
-  /** The type of event that occurred */
   eventType: AuthEventType;
 
-  /** The user involved, if applicable (not set for failed signins by unknown email) */
   userId?: string;
 
-  /** The email involved (always set for login attempts, useful when userId unknown) */
   email?: string;
 
-  /** Session ID if the event is session-scoped */
   sessionId?: string;
 
-  /** Client IP address */
   ipAddress?: string;
 
-  /** Raw User-Agent header */
   userAgent?: string;
 
-  /** When the event occurred */
   timestamp: Date;
 
-  /** Whether the operation succeeded */
   success: boolean;
 
-  /** Human-readable failure reason (only on failure) */
   failureReason?: string;
 
-  /**
-   * Arbitrary metadata for the event.
-   * Examples:
-   * - { rememberMe: true } for SIGNIN
-   * - { reason: "password_change" } for GLOBAL_LOGOUT
-   * - { subject: "Hello" } for CONTACT_FORM_SUBMITTED
-   */
   metadata?: Record<string, unknown>;
 
-  /**
-   * Service identifier. Always "auth-service" for this service.
-   * Future-proofs for multi-service audit aggregation.
-   */
   serviceId: string;
 
-  /**
-   * Unique request identifier (UUID v4) for tracing.
-   * Correlates the event to a specific HTTP request.
-   */
   requestId: string;
 }
 
@@ -10652,77 +10022,31 @@ export interface AuthEventEntity {
 File: src\domain\entities\session.entity.ts
 --------------------------------------------------------------------------------
 
-/**
- * Session entity. Represents an active authenticated session.
- *
- * Each sign-in (or token refresh) creates a new session.
- * Sessions are stored in MongoDB with a TTL index on expiresAt
- * for automatic cleanup.
- *
- * The refresh token is NEVER stored in plaintext — only its SHA256 hash.
- */
 export interface SessionEntity {
-  /** MongoDB ObjectId as string */
   readonly id: string;
 
-  /**
-   * UUID v4 session identifier.
-   * Included in JWT claims as `sessionId`.
-   * Used for targeted session revocation.
-   */
   sessionId: string;
 
-  /** Reference to the user (MongoDB ObjectId as string) */
   userId: string;
 
-  /**
-   * SHA256 hash of the refresh token.
-   * When a refresh request arrives, hash the incoming token
-   * and query by this field.
-   */
   refreshTokenHash: string;
 
-  /** Client IP address (from x-forwarded-for or x-real-ip) */
   ipAddress?: string;
 
-  /** Raw User-Agent header value */
   userAgent?: string;
 
-  /**
-   * When this session expires.
-   * - Default: 7 days from creation
-   * - RememberMe: 30 days from creation
-   * MongoDB TTL index on this field auto-deletes expired documents.
-   */
   expiresAt: Date;
 
-  /** When the session was created */
   readonly createdAt: Date;
 
-  /**
-   * When the session was last used for a token refresh.
-   * Updated on every successful refresh.
-   */
   lastUsedAt: Date;
 }
 
-/**
- * Session entity methods.
- */
 export const SessionMethods = {
-  /**
-   * Checks if the session has passed its expiry time.
-   * Note: MongoDB TTL index also enforces this, but checking in code
-   * provides defense-in-depth.
-   */
   isExpired(session: SessionEntity): boolean {
     return session.expiresAt < new Date();
   },
 
-  /**
-   * Returns the current timestamp for updating lastUsedAt.
-   * The caller is responsible for persisting this.
-   */
   getUpdatedLastUsed(): Date {
     return new Date();
   },
@@ -10733,145 +10057,62 @@ export const SessionMethods = {
 File: src\domain\entities\user.entity.ts
 --------------------------------------------------------------------------------
 
-/**
- * Roles supported by the platform.
- * - "user": Standard authenticated user.
- * - "admin": Elevated privileges, requires OTP on sign-in.
- */
 export type UserRole = "admin" | "user";
 
-/**
- * Tier stubs for future billing/subscription support.
- * - "free": Default tier for all users.
- * - "pro": Reserved for future paid features.
- */
 export type UserTier = "free" | "pro";
 
-/**
- * Core user entity. Represents an authenticated identity on the platform.
- *
- * This entity is the authoritative source of truth for user state.
- * External systems (JWT claims, session records) may cache user data,
- * but the User entity in MongoDB is canonical.
- */
 export interface UserEntity {
-  /** MongoDB ObjectId as string */
   readonly id: string;
 
-  /** Validated, normalized email (lowercase, trimmed) */
   email: string;
 
-  /** bcrypt(12) hash — never a plaintext password */
   hashedPassword: string;
 
-  /** User role: "admin" or "user" */
   role: UserRole;
 
-  /** Whether the email address has been verified via token */
   isVerified: boolean;
 
-  /**
-   * Monotonically increasing version counter.
-   * Incremented on: password change, global logout, security events.
-   * JWTs carry `tv` claim; if token.tv < user.tokenVersion, token is invalid.
-   */
   tokenVersion: number;
 
-  /** Subscription tier stub */
   tier: UserTier;
 
-  /**
-   * AES-256-CBC encrypted verification token.
-   * Format: "{iv_hex}:{ciphertext_hex}"
-   * Present only while awaiting email verification.
-   */
   verificationToken?: string;
 
-  /**
-   * SHA256 hash of the raw verification token.
-   * Used for indexed lookup: hash the incoming token, query by this field.
-   */
   verificationTokenHash?: string;
 
-  /** Expiry timestamp for the verification token */
   verificationTokenExpiry?: Date;
 
-  /** AES-256-CBC encrypted password reset token */
   passwordResetToken?: string;
 
-  /** SHA256 hash of the raw reset token */
   passwordResetTokenHash?: string;
 
-  /** Expiry timestamp for the reset token */
   passwordResetTokenExpiry?: Date;
 
-  /**
-   * AES-256-CBC encrypted 8-digit OTP.
-   * Only set for admin users during sign-in flow.
-   */
   otpSecret?: string;
 
-  /** When the current OTP expires (15 minutes from generation) */
   otpExpiry?: Date;
 
-  /**
-   * Number of failed OTP verification attempts for the current code.
-   * Resets to 0 when a new OTP is generated. Max 5 before lockout.
-   */
   otpAttempts?: number;
 
   readonly createdAt: Date;
   updatedAt: Date;
 }
 
-/**
- * User entity methods.
- *
- * These are pure functions that operate on the UserEntity interface.
- * We use functions (not class methods) to keep entities as plain data
- * that survives serialization/deserialization to/from MongoDB seamlessly.
- */
 export const UserMethods = {
-  /**
-   * Returns a new token version (current + 1).
-   * The caller is responsible for persisting the incremented value.
-   *
-   * Used after: password change, global logout, security event.
-   */
   incrementTokenVersion(user: UserEntity): number {
     return user.tokenVersion + 1;
   },
 
-  /**
-   * Checks if the user has the admin role.
-   */
   isAdmin(user: UserEntity): boolean {
     return user.role === "admin";
   },
 
-  /**
-   * Determines if the user is eligible to request a new OTP.
-   *
-   * Rules:
-   * - Must be an admin (only admins use OTP).
-   * - If an existing OTP is still valid (not expired), deny the request
-   *   to prevent OTP flooding.
-   */
   canRequestOtp(user: UserEntity): boolean {
     if (user.role !== "admin") return false;
     if (user.otpExpiry && user.otpExpiry > new Date()) return false;
     return true;
   },
 
-  /**
-   * Validates an OTP submission attempt.
-   *
-   * Returns an object describing the result:
-   * - valid: OTP matches and is within allowed attempts/expiry
-   * - expired: OTP has passed its expiry time
-   * - maxAttempts: Too many failed attempts (>=5)
-   * - invalid: OTP does not match
-   */
   validateOtpAttempt(user: UserEntity): {
     status: "valid" | "expired" | "maxAttempts" | "invalid" | "noOtp";
   } {
@@ -10898,12 +10139,6 @@ File: src\domain\errors\authentication.error.ts
 
 import { DomainError } from "./base.error";
 
-/**
- * Thrown when credentials are invalid (wrong email/password, bad OTP).
- *
- * SECURITY: The message should be generic to prevent user enumeration.
- * Do NOT say "user not found" vs "wrong password" — always "Invalid credentials".
- */
 export class AuthenticationError extends DomainError {
   readonly code = "AUTHENTICATION_ERROR" as const;
   readonly statusCode = 401;
@@ -10920,10 +10155,6 @@ File: src\domain\errors\authorization.error.ts
 
 import { DomainError } from "./base.error";
 
-/**
- * Thrown when an authenticated user lacks permission for an operation.
- * Example: non-admin user attempting admin-only actions.
- */
 export class AuthorizationError extends DomainError {
   readonly code = "AUTHORIZATION_ERROR" as const;
   readonly statusCode = 403;
@@ -10938,23 +10169,9 @@ export class AuthorizationError extends DomainError {
 File: src\domain\errors\base.error.ts
 --------------------------------------------------------------------------------
 
-/**
- * Base class for all domain errors.
- * Extends the native Error with a machine-readable code.
- *
- * The presentation layer maps error codes to HTTP status codes.
- */
 export abstract class DomainError extends Error {
-  /**
-   * Machine-readable error code (e.g., "AUTHENTICATION_ERROR").
-   * Used in API responses and for programmatic error handling.
-   */
   abstract readonly code: string;
 
-  /**
-   * HTTP status code suggestion for the presentation layer.
-   * The presentation layer may override this.
-   */
   abstract readonly statusCode: number;
 
   constructor(message: string) {
@@ -10964,10 +10181,6 @@ export abstract class DomainError extends Error {
     Object.setPrototypeOf(this, new.target.prototype);
   }
 
-  /**
-   * Returns a serializable representation for API responses.
-   * Never exposes stack traces in production.
-   */
   toJSON(): { code: string; message: string } {
     return {
       code: this.code,
@@ -10983,10 +10196,6 @@ File: src\domain\errors\conflict.error.ts
 
 import { DomainError } from "./base.error";
 
-/**
- * Thrown when an operation conflicts with existing state.
- * Primary use case: duplicate email on registration.
- */
 export class ConflictError extends DomainError {
   readonly code = "CONFLICT_ERROR" as const;
   readonly statusCode = 409;
@@ -11003,14 +10212,6 @@ File: src\domain\errors\not-found.error.ts
 
 import { DomainError } from "./base.error";
 
-/**
- * Thrown when a requested resource does not exist.
- * Example: user not found by ID, session not found.
- *
- * SECURITY: For public-facing operations (forgot password, verify email),
- * do NOT throw this error. Instead, return a generic success message
- * to prevent user/email enumeration.
- */
 export class NotFoundError extends DomainError {
   readonly code = "NOT_FOUND_ERROR" as const;
   readonly statusCode = 404;
@@ -11027,15 +10228,10 @@ File: src\domain\errors\rate-limit.error.ts
 
 import { DomainError } from "./base.error";
 
-/**
- * Thrown when a client exceeds their rate limit.
- * Carries retryAfter information for the Retry-After header.
- */
 export class RateLimitError extends DomainError {
   readonly code = "RATE_LIMIT_ERROR" as const;
   readonly statusCode = 429;
 
-  /** Seconds until the client can retry */
   readonly retryAfter: number;
 
   constructor(retryAfter: number = 60) {
@@ -11051,9 +10247,6 @@ File: src\domain\errors\token.error.ts
 
 import { DomainError } from "./base.error";
 
-/**
- * Token-specific error subtypes.
- */
 export type TokenErrorReason =
   | "expired"
   | "revoked"
@@ -11065,15 +10258,10 @@ export type TokenErrorReason =
   | "user_not_verified"
   | "role_drift";
 
-/**
- * Thrown when a JWT or verification/reset token is invalid.
- * Carries the specific reason for debugging without exposing it to clients.
- */
 export class TokenError extends DomainError {
   readonly code = "TOKEN_ERROR" as const;
   readonly statusCode = 401;
 
-  /** Internal reason — logged but NOT sent to client */
   readonly reason: TokenErrorReason;
 
   constructor(
@@ -11092,17 +10280,10 @@ File: src\domain\errors\validation.error.ts
 
 import { DomainError } from "./base.error";
 
-/**
- * Thrown when input fails validation (e.g., invalid email format,
- * weak password, malformed token).
- *
- * Can carry field-level details for structured error responses.
- */
 export class ValidationError extends DomainError {
   readonly code = "VALIDATION_ERROR" as const;
   readonly statusCode = 400;
 
-  /** Optional field-level validation errors */
   readonly fields?: Record<string, string>;
 
   constructor(message: string, fields?: Record<string, string>) {
@@ -11174,25 +10355,13 @@ import type {
  * Audit logging failures MUST NOT block or fail auth operations.
  */
 export interface IAuthEventRepository {
-  /**
-   * Write an audit event.
-   * Called fire-and-forget: failures are logged but not propagated.
-   */
   create(event: Omit<AuthEventEntity, "id">): Promise<void>;
 
-  /**
-   * Find events by user ID, ordered by timestamp descending.
-   * Used for admin audit trail.
-   */
   findByUserId(
     userId: string,
     options?: { limit?: number; offset?: number; eventType?: AuthEventType }
   ): Promise<AuthEventEntity[]>;
 
-  /**
-   * Find events by IP address, ordered by timestamp descending.
-   * Used for detecting suspicious activity from a single IP.
-   */
   findByIp(
     ipAddress: string,
     options?: { limit?: number; since?: Date }
@@ -11206,63 +10375,25 @@ File: src\domain\repositories\session.repository.ts
 
 import type { SessionEntity } from "@domain/entities/session.entity";
 
-/**
- * Port: Session data access.
- * Implemented by infrastructure/database/session.repository.impl.ts
- */
 export interface ISessionRepository {
-  /**
-   * Create a new session. Returns the created session with generated id.
-   */
   create(
     session: Omit<SessionEntity, "id" | "createdAt">
   ): Promise<SessionEntity>;
 
-  /**
-   * Find a session by the refresh token hash.
-   * Returns null if not found or expired.
-   */
   findByRefreshTokenHash(hash: string): Promise<SessionEntity | null>;
 
-  /**
-   * Find a session by its UUID sessionId.
-   */
   findBySessionId(sessionId: string): Promise<SessionEntity | null>;
 
-  /**
-   * Find all sessions for a user (for session management UI).
-   */
   findByUserId(userId: string): Promise<SessionEntity[]>;
 
-  /**
-   * Delete a specific session by its UUID sessionId.
-   * Returns true if a session was actually deleted.
-   */
   delete(sessionId: string): Promise<boolean>;
 
-  /**
-   * Delete all sessions for a user (global logout).
-   * Returns the count of deleted sessions.
-   */
   deleteAllForUser(userId: string): Promise<number>;
 
-  /**
-   * Atomically find and delete a session by refresh token hash.
-   * Used during token refresh to prevent race conditions.
-   * Returns the deleted session, or null if not found.
-   */
   findAndDeleteByRefreshTokenHash(hash: string): Promise<SessionEntity | null>;
 
-  /**
-   * Update the lastUsedAt timestamp.
-   */
   updateLastUsed(sessionId: string, lastUsedAt: Date): Promise<void>;
 
-  /**
-   * Delete all expired sessions.
-   * Used by the cleanup cron job.
-   * Returns the count of deleted sessions.
-   */
   deleteExpiredSessions(): Promise<number>;
 }
 
@@ -11273,44 +10404,23 @@ File: src\domain\repositories\user.repository.ts
 
 import type { UserEntity } from "@domain/entities/user.entity";
 
-/**
- * Port: User data access.
- * Implemented by infrastructure/database/user.repository.impl.ts
- */
 export interface IUserRepository {
-  /** Find user by email. Returns null if not found. */
   findByEmail(email: string): Promise<UserEntity | null>;
 
-  /** Find user by MongoDB ObjectId. Returns null if not found. */
   findById(id: string): Promise<UserEntity | null>;
 
-  /**
-   * Create a new user. Returns the created user with generated id.
-   * @throws ConflictError if email already exists (duplicate key).
-   */
   create(
     user: Omit<UserEntity, "id" | "createdAt" | "updatedAt">
   ): Promise<UserEntity>;
 
-  /**
-   * Update the user's hashed password and (optionally) increment tokenVersion.
-   * Used for password change and legacy hash migration.
-   */
   updatePassword(
     userId: string,
     hashedPassword: string,
     tokenVersion?: number
   ): Promise<void>;
 
-  /**
-   * Update the token version. Used for global logout.
-   */
   updateTokenVersion(userId: string, tokenVersion: number): Promise<void>;
 
-  /**
-   * Update verification-related fields.
-   * Set isVerified=true, clear verification token fields.
-   */
   updateVerification(
     userId: string,
     update: {
@@ -11321,9 +10431,6 @@ export interface IUserRepository {
     }
   ): Promise<void>;
 
-  /**
-   * Set OTP fields (admin sign-in flow).
-   */
   updateOtp(
     userId: string,
     update: {
@@ -11333,24 +10440,12 @@ export interface IUserRepository {
     }
   ): Promise<void>;
 
-  /**
-   * Clear OTP fields after successful verification or expiry.
-   */
   clearOtp(userId: string): Promise<void>;
 
-  /**
-   * Find user by verification token hash.
-   */
   findByVerificationTokenHash(hash: string): Promise<UserEntity | null>;
 
-  /**
-   * Find user by password reset token hash.
-   */
   findByPasswordResetTokenHash(hash: string): Promise<UserEntity | null>;
 
-  /**
-   * Set password reset token fields.
-   */
   updatePasswordResetToken(
     userId: string,
     update: {
@@ -11360,14 +10455,8 @@ export interface IUserRepository {
     }
   ): Promise<void>;
 
-  /**
-   * Clear password reset token fields.
-   */
   clearPasswordResetToken(userId: string): Promise<void>;
 
-  /**
-   * Set new verification token fields (for resend verification).
-   */
   updateVerificationToken(
     userId: string,
     update: {
@@ -11377,9 +10466,6 @@ export interface IUserRepository {
     }
   ): Promise<void>;
 
-  /**
-   * Increment OTP attempts counter.
-   */
   incrementOtpAttempts(userId: string): Promise<void>;
 }
 
@@ -11390,14 +10476,6 @@ File: src\domain\value-objects\email.vo.ts
 
 import { ValidationError } from "@domain/errors/validation.error";
 
-/**
- * Email value object.
- * Validates format and normalizes to lowercase.
- *
- * @example
- * const email = Email.create("User@Example.COM");
- * console.log(email.value); // "user@example.com"
- */
 export class Email {
   private static readonly EMAIL_REGEX =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
@@ -11458,13 +10536,6 @@ File: src\domain\value-objects\hashed-password.vo.ts
 
 import { ValidationError } from "@domain/errors/validation.error";
 
-/**
- * HashedPassword value object.
- * Guarantees the stored value is a bcrypt hash (starts with "$2b$")
- * or a legacy PBKDF2-SHA512 hash (contains ":" separator).
- *
- * NEVER stores a plaintext password.
- */
 export class HashedPassword {
   private static readonly BCRYPT_PREFIX = "$2b$";
   private static readonly BCRYPT_MIN_LENGTH = 59;
@@ -11475,11 +10546,6 @@ export class HashedPassword {
     this.value = hash;
   }
 
-  /**
-   * Creates a HashedPassword from a hash string.
-   * Validates that the string looks like a valid hash.
-   * @throws ValidationError if the string is not a recognized hash format.
-   */
   static create(hash: string): HashedPassword {
     if (!hash || hash.length < 10) {
       throw new ValidationError("Invalid password hash");
@@ -11500,10 +10566,6 @@ export class HashedPassword {
     return new HashedPassword(hash);
   }
 
-  /**
-   * Determines if this is a legacy PBKDF2-SHA512 hash.
-   * If true, the password should be re-hashed with bcrypt on next successful login.
-   */
   isLegacy(): boolean {
     return !this.value.startsWith(HashedPassword.BCRYPT_PREFIX);
   }
@@ -11520,11 +10582,6 @@ File: src\domain\value-objects\jti.vo.ts
 
 import { ValidationError } from "@domain/errors/validation.error";
 
-/**
- * JTI (JWT ID) value object.
- * A 128-bit hex string (32 hex characters) that uniquely identifies a JWT.
- * Used for individual token revocation.
- */
 export class JTI {
   private static readonly HEX_128_REGEX = /^[0-9a-f]{32}$/;
 
@@ -11534,10 +10591,6 @@ export class JTI {
     this.value = jti;
   }
 
-  /**
-   * Creates a JTI from a hex string.
-   * @throws ValidationError if not a valid 128-bit hex string.
-   */
   static create(jti: string): JTI {
     const lower = jti.toLowerCase();
     if (!JTI.HEX_128_REGEX.test(lower)) {
@@ -11546,9 +10599,6 @@ export class JTI {
     return new JTI(lower);
   }
 
-  /**
-   * Creates a JTI from a trusted source (no validation).
-   */
   static fromTrusted(jti: string): JTI {
     return new JTI(jti.toLowerCase());
   }
@@ -11569,10 +10619,6 @@ File: src\domain\value-objects\session-id.vo.ts
 
 import { ValidationError } from "@domain/errors/validation.error";
 
-/**
- * SessionId value object.
- * Wraps a UUID v4 string that uniquely identifies a session.
- */
 export class SessionId {
   private static readonly UUID_V4_REGEX =
     /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -11583,10 +10629,6 @@ export class SessionId {
     this.value = id;
   }
 
-  /**
-   * Creates a SessionId from an existing UUID string.
-   * @throws ValidationError if the string is not a valid UUID v4.
-   */
   static create(id: string): SessionId {
     if (!SessionId.UUID_V4_REGEX.test(id)) {
       throw new ValidationError("Session ID must be a valid UUID v4");
@@ -11594,9 +10636,6 @@ export class SessionId {
     return new SessionId(id);
   }
 
-  /**
-   * Creates a SessionId from a trusted source (no validation).
-   */
   static fromTrusted(id: string): SessionId {
     return new SessionId(id);
   }
@@ -11617,10 +10656,6 @@ File: src\domain\value-objects\token-version.vo.ts
 
 import { ValidationError } from "@domain/errors/validation.error";
 
-/**
- * TokenVersion value object.
- * Represents a non-negative integer used for token invalidation.
- */
 export class TokenVersion {
   readonly value: number;
 
@@ -11628,10 +10663,6 @@ export class TokenVersion {
     this.value = version;
   }
 
-  /**
-   * Creates a validated TokenVersion.
-   * @throws ValidationError if the value is negative or not an integer.
-   */
   static create(version: number): TokenVersion {
     if (!Number.isInteger(version) || version < 0) {
       throw new ValidationError("Token version must be a non-negative integer");
@@ -11639,9 +10670,6 @@ export class TokenVersion {
     return new TokenVersion(version);
   }
 
-  /**
-   * Returns a new TokenVersion incremented by 1.
-   */
   increment(): TokenVersion {
     return new TokenVersion(this.value + 1);
   }
@@ -11658,11 +10686,6 @@ File: src\env.ts
 
 import { z } from "zod";
 
-/**
- * Environment variable schema.
- * Validated once at module load time. If any required variable is missing
- * or malformed, the process will crash immediately with a descriptive error.
- */
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
@@ -11721,9 +10744,6 @@ const envSchema = z.object({
   CRON_SECRET: z.string().min(16, "CRON_SECRET must be at least 16 characters"),
 });
 
-/**
- * Parse and validate. Crashes fast on missing/invalid variables.
- */
 function validateEnv(): z.infer<typeof envSchema> {
   const result = envSchema.safeParse(process.env);
 
@@ -11739,16 +10759,8 @@ function validateEnv(): z.infer<typeof envSchema> {
   return result.data;
 }
 
-/**
- * Exported validated environment. Import this instead of process.env.
- *
- * @example
- * import { env } from "@/env";
- * const db = client.db(env.DB_NAME);
- */
 export const env = validateEnv();
 
-/** Type of the validated environment */
 export type Env = z.infer<typeof envSchema>;
 
 
@@ -11758,35 +10770,10 @@ File: src\infrastructure\crypto\hash.ts
 
 import crypto from "node:crypto";
 
-/**
- * Hash a token using SHA256.
- *
- * Used for:
- * - Refresh tokens: hash before storing in platform_sessions.refreshTokenHash
- * - Verification tokens: hash before storing in platform_users.verificationTokenHash
- * - Password reset tokens: hash before storing in platform_users.passwordResetTokenHash
- *
- * Why hash before storage?
- * If the database is compromised, the attacker cannot use the stored hashes
- * to forge valid tokens. They would need the raw token (which only the client has).
- *
- * @param raw The raw token string to hash
- * @returns Lowercase hex-encoded SHA256 hash
- */
 export function sha256Hash(raw: string): string {
   return crypto.createHash("sha256").update(raw).digest("hex");
 }
 
-/**
- * Generate a cryptographically random token.
- *
- * Used for:
- * - Verification tokens (32 bytes = 64 hex chars)
- * - Password reset tokens (32 bytes = 64 hex chars)
- *
- * @param bytes Number of random bytes (default 32)
- * @returns Hex-encoded random string
- */
 export function generateRandomToken(bytes: number = 32): string {
   return crypto.randomBytes(bytes).toString("hex");
 }
@@ -11796,13 +10783,6 @@ export function generateRandomToken(bytes: number = 32): string {
 File: src\infrastructure\crypto\jwks.ts
 --------------------------------------------------------------------------------
 
-/**
- * JWKS (JSON Web Key Set) Provider
- *
- * Exports public keys in JWK format for token validation by consuming services.
- * Supports both access token and refresh token public keys.
- */
-
 import { exportJWK, type JWK } from "jose";
 import { env } from "@/env";
 
@@ -11810,11 +10790,6 @@ export interface JsonWebKeySet {
   keys: JWK[];
 }
 
-/**
- * Export public keys as JWKS format
- *
- * @returns JsonWebKeySet containing both access and refresh token public keys
- */
 export async function getJwksData(): Promise<JsonWebKeySet> {
   const [accessPublicKey, refreshPublicKey] = await Promise.all([
     crypto.subtle.importKey(
@@ -11888,17 +10863,9 @@ import { env } from "@/env";
 const ALGORITHM = "RS256" as const;
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 
-/**
- * Type alias for jose key material.
- * Since jose doesn't export KeyLike in this version, we define it explicitly.
- * Using 'any' to avoid conflicts between crypto.KeyObject and crypto.webcrypto.CryptoKey
- */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CryptoKey = any;
 
-/**
- * Parsed key material, cached after first load.
- */
 interface KeySet {
   privateKey: CryptoKey;
   publicKey: CryptoKey;
@@ -11913,9 +10880,6 @@ let previousKeys: Array<{
 }> = [];
 let previousKeysExpiry: number = 0;
 
-/**
- * Load and cache access token key pair.
- */
 async function getAccessKeySet(): Promise<KeySet> {
   if (accessKeySet) return accessKeySet;
 
@@ -11932,9 +10896,6 @@ async function getAccessKeySet(): Promise<KeySet> {
   return accessKeySet;
 }
 
-/**
- * Load and cache refresh token key pair.
- */
 async function getRefreshKeySet(): Promise<KeySet> {
   if (refreshKeySet) return refreshKeySet;
 
@@ -11951,11 +10912,6 @@ async function getRefreshKeySet(): Promise<KeySet> {
   return refreshKeySet;
 }
 
-/**
- * Load previous (rotated) public keys.
- * These are accepted for verification but never used for signing.
- * They expire 30 days after server start to ensure old tokens are eventually rejected.
- */
 async function getPreviousKeys(): Promise<
   Array<{ publicKey: CryptoKey; kid: string }>
 > {
@@ -11988,10 +10944,6 @@ async function getPreviousKeys(): Promise<
   return previousKeys;
 }
 
-/**
- * Find the public key for a given KID.
- * Searches current keys first, then previous (rotated) keys.
- */
 async function findPublicKeyByKid(
   kid: string,
   type: "access" | "refresh"
@@ -12011,9 +10963,6 @@ async function findPublicKeyByKid(
   return null;
 }
 
-/**
- * Generate a 128-bit hex JTI (JWT ID) for token revocation.
- */
 function generateJti(): string {
   return crypto.randomBytes(16).toString("hex");
 }
@@ -12068,21 +11017,6 @@ export class JwtServiceImpl implements ITokenService {
     return { token, jti };
   }
 
-  /**
-   * Verify an access token — the complete 8-step verification chain.
-   *
-   * Steps:
-   * 1. Parse JWT header (extract kid)
-   * 2. Find public key by kid (current or previous)
-   * 3. Verify signature + expiry via jose.jwtVerify
-   * 4. Validate payload structure
-   *
-   * Steps 5-8 (revocation checks, DB user fetch) are performed
-   * by the auth middleware, NOT here. This method only handles
-   * cryptographic verification.
-   *
-   * Returns null on ANY failure (no partial auth state).
-   */
   async verifyAccessToken(token: string): Promise<AccessTokenPayload | null> {
     try {
       const header = jose.decodeProtectedHeader(token);
@@ -12171,14 +11105,6 @@ export class JwtServiceImpl implements ITokenService {
     }
   }
 
-  /**
-   * Generate JWKS data for the /.well-known/jwks.json endpoint.
-   *
-   * Includes:
-   * - Current access token public key
-   * - Current refresh token public key
-   * - Previous (rotated) public keys (if not expired)
-   */
   async getJwksData(): Promise<JsonWebKeySet> {
     const keys: JsonWebKey[] = [];
 
@@ -12231,40 +11157,20 @@ File: src\infrastructure\crypto\otp.service.ts
 import crypto from "node:crypto";
 import { env } from "@/env";
 
-/** AES-256-CBC configuration */
 const ALGORITHM = "aes-256-cbc" as const;
 const IV_LENGTH = 16;
 const OTP_MIN = 10_000_000;
 const OTP_MAX = 99_999_999;
 
-/**
- * Get the encryption key as a Buffer.
- * The ENCRYPTION_KEY env var must be exactly 32 characters (256 bits).
- */
 function getEncryptionKey(): Buffer {
   return Buffer.from(env.ENCRYPTION_KEY, "utf-8");
 }
 
-/**
- * Generate a cryptographically random 8-digit OTP.
- *
- * Uses crypto.randomInt() for uniform distribution.
- * Range: 10000000 to 99999999 (always exactly 8 digits).
- */
 export function generateOtp(): string {
   const otp = crypto.randomInt(OTP_MIN, OTP_MAX + 1);
   return otp.toString();
 }
 
-/**
- * Encrypt an OTP using AES-256-CBC.
- *
- * Storage format: "{iv_hex}:{ciphertext_hex}"
- * The IV is random per encryption, ensuring the same OTP encrypts differently each time.
- *
- * @param otp The plaintext OTP string
- * @returns Encrypted string in format "iv:ciphertext" (hex-encoded)
- */
 export function encryptOtp(otp: string): string {
   const iv = crypto.randomBytes(IV_LENGTH);
   const key = getEncryptionKey();
@@ -12276,12 +11182,6 @@ export function encryptOtp(otp: string): string {
   return `${iv.toString("hex")}:${encrypted}`;
 }
 
-/**
- * Decrypt an OTP from storage format.
- *
- * @param encryptedOtp The encrypted string in format "iv:ciphertext"
- * @returns The plaintext OTP string, or null if decryption fails
- */
 export function decryptOtp(encryptedOtp: string): string | null {
   try {
     const colonIndex = encryptedOtp.indexOf(":");
@@ -12305,15 +11205,6 @@ export function decryptOtp(encryptedOtp: string): string | null {
   }
 }
 
-/**
- * Compare a submitted OTP against an encrypted stored OTP.
- *
- * Uses timing-safe comparison to prevent timing attacks.
- *
- * @param submittedOtp The OTP submitted by the user
- * @param encryptedStoredOtp The encrypted OTP from the database
- * @returns true if the OTP matches
- */
 export function verifyOtp(
   submittedOtp: string,
   encryptedStoredOtp: string
@@ -12333,14 +11224,8 @@ export function verifyOtp(
   );
 }
 
-/**
- * OTP expiry duration in milliseconds (15 minutes).
- */
 export const OTP_EXPIRY_MS = 15 * 60 * 1000;
 
-/**
- * Maximum OTP verification attempts before lockout.
- */
 export const OTP_MAX_ATTEMPTS = 5;
 
 
@@ -12351,33 +11236,16 @@ File: src\infrastructure\crypto\password.service.ts
 import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 
-/** bcrypt cost factor — 12 rounds (2^12 = 4096 iterations) */
 const BCRYPT_ROUNDS = 12;
 
-/** PBKDF2 parameters (for legacy password verification only) */
 const PBKDF2_ITERATIONS = 310_000;
 const PBKDF2_KEY_LENGTH = 64;
 const PBKDF2_DIGEST = "sha512";
 
-/**
- * Hash a password using bcrypt with cost factor 12.
- *
- * @param plaintext The raw password
- * @returns bcrypt hash string (starts with "$2b$12$")
- */
 export async function hashPassword(plaintext: string): Promise<string> {
   return bcrypt.hash(plaintext, BCRYPT_ROUNDS);
 }
 
-/**
- * Verify a password against a hash.
- *
- * Supports two hash formats:
- * 1. bcrypt (starts with "$2b$") — current standard
- * 2. PBKDF2-SHA512 (contains ":") — legacy format, auto-migrate on match
- *
- * @returns Object with `valid` (boolean) and `needsRehash` (true if legacy PBKDF2)
- */
 export async function verifyPassword(
   plaintext: string,
   storedHash: string
@@ -12418,10 +11286,6 @@ export async function verifyPassword(
   return { valid, needsRehash: true };
 }
 
-/**
- * Timing-safe string comparison.
- * Prevents timing attacks by always comparing all characters.
- */
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) {
     const bufA = Buffer.from(a);
@@ -12432,18 +11296,6 @@ function timingSafeEqual(a: string, b: string): boolean {
   return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b));
 }
 
-/**
- * Validate password complexity requirements.
- *
- * Requirements:
- * - Minimum 8 characters
- * - At least one uppercase letter (A-Z)
- * - At least one lowercase letter (a-z)
- * - At least one digit (0-9)
- * - At least one special character (!@#$%^&*()_+-=[]{}|;':",.<>/?)
- *
- * @returns null if valid, or an error message string describing what's missing
- */
 export function validatePasswordComplexity(password: string): string | null {
   const issues: string[] = [];
 
@@ -12507,12 +11359,6 @@ async function collection(): Promise<Collection<AuthEventDocument>> {
 }
 
 export class AuthEventRepositoryImpl implements IAuthEventRepository {
-  /**
-   * Write an audit event. Fire-and-forget.
-   *
-   * CRITICAL: This method catches all errors internally.
-   * Audit logging failures MUST NOT propagate to callers.
-   */
   async create(event: Omit<AuthEventEntity, "id">): Promise<void> {
     try {
       const col = await collection();
@@ -12612,17 +11458,6 @@ const CLIENT_OPTIONS: MongoClientOptions = {
   compressors: ["zstd", "snappy", "zlib"],
 };
 
-/**
- * Circuit breaker state.
- *
- * Tracks consecutive failures to prevent avalanche of connection
- * attempts when MongoDB is down.
- *
- * States:
- * - CLOSED: normal operation, connections are attempted
- * - OPEN: too many failures, reject immediately
- * - HALF_OPEN: recovery period, allow one probe attempt
- */
 interface CircuitBreakerState {
   failures: number;
   state: "CLOSED" | "OPEN" | "HALF_OPEN";
@@ -12648,9 +11483,6 @@ let connectionTimestamp: number = 0;
 
 const CONNECTION_TTL_MS = 10 * 60 * 1000;
 
-/**
- * Sanitize MongoDB connection errors to prevent leaking credentials.
- */
 function sanitizeError(error: unknown): string {
   if (error instanceof Error) {
     return error.message.replace(
@@ -12661,9 +11493,6 @@ function sanitizeError(error: unknown): string {
   return "Unknown database error";
 }
 
-/**
- * Check if the circuit breaker allows a connection attempt.
- */
 function canAttemptConnection(): boolean {
   if (circuitBreaker.state === "CLOSED") return true;
 
@@ -12678,9 +11507,6 @@ function canAttemptConnection(): boolean {
   return circuitBreaker.state === "HALF_OPEN";
 }
 
-/**
- * Record a successful connection — reset the circuit breaker.
- */
 function recordSuccess(): void {
   circuitBreaker.failures = 0;
   circuitBreaker.state = "CLOSED";
@@ -12688,9 +11514,6 @@ function recordSuccess(): void {
   circuitBreaker.nextRetryTime = 0;
 }
 
-/**
- * Record a connection failure — potentially open the circuit.
- */
 function recordFailure(): void {
   circuitBreaker.failures += 1;
   circuitBreaker.lastFailureTime = Date.now();
@@ -12707,18 +11530,6 @@ function recordFailure(): void {
   }
 }
 
-/**
- * Get a connected MongoDB client and database reference.
- *
- * Features:
- * - Singleton: reuses the same client across requests within a serverless instance
- * - Circuit breaker: stops hammering a down database
- * - Connection TTL: reconnects after 10 minutes to pick up cluster changes
- * - Error sanitization: never leaks connection strings
- * - Pool monitoring: logs significant connection pool events
- *
- * @throws Error if connection fails and circuit breaker is open
- */
 export async function getDatabase(): Promise<Db> {
   if (
     client &&
@@ -12784,13 +11595,6 @@ export async function getDatabase(): Promise<Db> {
   }
 }
 
-/**
- * Get a MongoDB collection with type safety.
- *
- * @example
- * const users = await getCollection<UserDocument>("platform_users");
- * const user = await users.findOne({ email: "user@example.com" });
- */
 export async function getCollection<T extends Document>(
   name: string
 ): Promise<import("mongodb").Collection<T>> {
@@ -12798,10 +11602,6 @@ export async function getCollection<T extends Document>(
   return database.collection<T>(name);
 }
 
-/**
- * Close the MongoDB connection gracefully.
- * Called during shutdown or when connection TTL expires.
- */
 export async function closeConnection(): Promise<void> {
   if (client) {
     try {
@@ -12829,10 +11629,6 @@ import { USERS_COLLECTION } from "./schemas/user.schema";
 import { SESSIONS_COLLECTION } from "./schemas/session.schema";
 import { AUTH_EVENTS_COLLECTION } from "./schemas/auth-event.schema";
 
-/**
- * Index definitions for all collections.
- * Each entry: [collectionName, indexes[]]
- */
 const INDEX_DEFINITIONS: Array<{
   collection: string;
   indexes: IndexDescription[];
@@ -12939,15 +11735,6 @@ const INDEX_DEFINITIONS: Array<{
   },
 ];
 
-/**
- * Create all indexes for all collections.
- *
- * Called from instrumentation.ts on cold start.
- * Uses createIndexes (plural) for efficiency — one round trip per collection.
- *
- * Safe to call repeatedly: MongoDB's createIndexes is idempotent.
- * If an index already exists with the same key and options, it is a no-op.
- */
 export async function createIndexes(): Promise<void> {
   const db = await getDatabase();
 
@@ -12966,10 +11753,6 @@ export async function createIndexes(): Promise<void> {
   }
 }
 
-/**
- * Drop all custom indexes (not _id) for a collection.
- * Used in tests and migration scripts.
- */
 export async function dropIndexes(
   db: Db,
   collectionName: string
@@ -12985,9 +11768,6 @@ File: src\infrastructure\database\schemas\auth-event.schema.ts
 import type { ObjectId } from "mongodb";
 import type { AuthEventType } from "@domain/entities/auth-event.entity";
 
-/**
- * MongoDB document shape for the platform_auth_events collection.
- */
 export interface AuthEventDocument {
   _id: ObjectId;
   eventType: AuthEventType;
@@ -13004,7 +11784,6 @@ export interface AuthEventDocument {
   requestId: string;
 }
 
-/** Collection name */
 export const AUTH_EVENTS_COLLECTION = "platform_auth_events" as const;
 
 
@@ -13014,9 +11793,6 @@ File: src\infrastructure\database\schemas\session.schema.ts
 
 import type { ObjectId } from "mongodb";
 
-/**
- * MongoDB document shape for the platform_sessions collection.
- */
 export interface SessionDocument {
   _id: ObjectId;
   sessionId: string;
@@ -13029,7 +11805,6 @@ export interface SessionDocument {
   lastUsedAt: Date;
 }
 
-/** Collection name */
 export const SESSIONS_COLLECTION = "platform_sessions" as const;
 
 
@@ -13039,10 +11814,6 @@ File: src\infrastructure\database\schemas\user.schema.ts
 
 import type { ObjectId } from "mongodb";
 
-/**
- * MongoDB document shape for the platform_users collection.
- * Maps to/from the UserEntity domain type.
- */
 export interface UserDocument {
   _id: ObjectId;
   email: string;
@@ -13068,7 +11839,6 @@ export interface UserDocument {
   updatedAt: Date;
 }
 
-/** Collection name */
 export const USERS_COLLECTION = "platform_users" as const;
 
 
@@ -13083,9 +11853,6 @@ import { getCollection } from "./connection";
 import type { SessionDocument } from "./schemas/session.schema";
 import { SESSIONS_COLLECTION } from "./schemas/session.schema";
 
-/**
- * Maps a MongoDB SessionDocument to a domain SessionEntity.
- */
 function toEntity(doc: SessionDocument): SessionEntity {
   return {
     id: doc._id.toHexString(),
@@ -13210,10 +11977,6 @@ import { getCollection } from "./connection";
 import type { UserDocument } from "./schemas/user.schema";
 import { USERS_COLLECTION } from "./schemas/user.schema";
 
-/**
- * Maps a MongoDB UserDocument to a domain UserEntity.
- * Converts ObjectId to string, strips MongoDB internals.
- */
 function toEntity(doc: UserDocument): UserEntity {
   return {
     id: doc._id.toHexString(),
@@ -13237,9 +12000,6 @@ function toEntity(doc: UserDocument): UserEntity {
   };
 }
 
-/**
- * Lazily resolved collection reference.
- */
 async function collection(): Promise<Collection<UserDocument>> {
   return getCollection<UserDocument>(USERS_COLLECTION);
 }
@@ -13498,10 +12258,6 @@ import pRetry from "p-retry";
 import type { IEmailProvider } from "@app/interfaces/email.provider";
 import { env } from "@/env";
 
-/**
- * Get the Brevo API client.
- * The API key is set via environment variable that Brevo SDK reads automatically.
- */
 function getApiInstance(): brevo.TransactionalEmailsApi {
   if (!process.env.BREVO_API_KEY) {
     process.env.BREVO_API_KEY = env.BREVO_API_KEY;
@@ -13510,13 +12266,6 @@ function getApiInstance(): brevo.TransactionalEmailsApi {
   return new brevo.TransactionalEmailsApi();
 }
 
-/**
- * p-retry options for all email sending.
- *
- * - 3 attempts total (1 initial + 2 retries)
- * - Exponential backoff: 1s, 2s
- * - Does NOT retry on 4xx errors (client errors, like invalid API key)
- */
 const RETRY_OPTIONS: Parameters<typeof pRetry>[1] = {
   retries: 2,
   minTimeout: 1000,
@@ -13537,9 +12286,6 @@ const RETRY_OPTIONS: Parameters<typeof pRetry>[1] = {
   },
 };
 
-/**
- * Base email parameters shared by all transactional emails.
- */
 interface BaseEmailParams {
   sender: { email: string; name: string };
   to: Array<{ email: string }>;
@@ -13547,9 +12293,6 @@ interface BaseEmailParams {
   htmlContent: string;
 }
 
-/**
- * Build the verification email.
- */
 function buildVerificationEmail(to: string, token: string): BaseEmailParams {
   const verifyUrl = `${env.NEXT_PUBLIC_SITE_URL}/verify-email?token=${encodeURIComponent(token)}`;
 
@@ -13612,9 +12355,6 @@ function buildVerificationEmail(to: string, token: string): BaseEmailParams {
   };
 }
 
-/**
- * Build the OTP email (admin only).
- */
 function buildOtpEmail(to: string, otp: string): BaseEmailParams {
   return {
     sender: { email: env.FROM_EMAIL, name: "ankurhalder.com" },
@@ -13668,9 +12408,6 @@ function buildOtpEmail(to: string, otp: string): BaseEmailParams {
   };
 }
 
-/**
- * Build the password reset email.
- */
 function buildPasswordResetEmail(to: string, token: string): BaseEmailParams {
   const resetUrl = `${env.NEXT_PUBLIC_SITE_URL}/reset-password?token=${encodeURIComponent(token)}`;
 
@@ -13733,9 +12470,6 @@ function buildPasswordResetEmail(to: string, token: string): BaseEmailParams {
   };
 }
 
-/**
- * Build the contact form forwarding email.
- */
 function buildContactFormEmail(
   from: string,
   name: string,
@@ -13792,9 +12526,6 @@ function buildContactFormEmail(
   };
 }
 
-/**
- * Escape HTML special characters to prevent XSS in email templates.
- */
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     "&": "&amp;",
@@ -13863,24 +12594,12 @@ File: src\infrastructure\redis\client.ts
 import { Redis } from "@upstash/redis";
 import { env } from "@/env";
 
-/**
- * Singleton Upstash Redis client.
- *
- * - Lazy initialization: created on first use
- * - REST-based: no persistent connections (serverless-safe)
- * - Graceful degradation: callers check `isRedisAvailable()` before relying on data
- */
 let redisClient: Redis | null = null;
 let redisAvailable = true;
 let lastRedisError: number = 0;
 
-/** Cooldown before retrying Redis after a failure (30 seconds) */
 const REDIS_RETRY_COOLDOWN_MS = 30_000;
 
-/**
- * Get the Upstash Redis client instance.
- * Returns null if Redis is unavailable (missing env vars or connection failure).
- */
 export function getRedisClient(): Redis | null {
   if (
     !redisAvailable &&
@@ -13921,17 +12640,10 @@ export function getRedisClient(): Redis | null {
   }
 }
 
-/**
- * Check if Redis is currently considered available.
- */
 export function isRedisAvailable(): boolean {
   return redisAvailable;
 }
 
-/**
- * Record a Redis operation failure.
- * Called by consumers when a Redis command fails.
- */
 export function recordRedisFailure(error: unknown): void {
   console.error(
     "[Redis] Operation failed:",
@@ -13940,11 +12652,6 @@ export function recordRedisFailure(error: unknown): void {
   lastRedisError = Date.now();
 }
 
-/**
- * Export the singleton Redis client instance for direct use.
- * This is a convenience export that calls getRedisClient().
- * Prefer using getRedisClient() in most cases for better null handling.
- */
 export { redisClient };
 
 
@@ -13952,29 +12659,12 @@ export { redisClient };
 File: src\infrastructure\redis\otp-rate-limiter.ts
 --------------------------------------------------------------------------------
 
-/**
- * OTP Rate Limiter
- *
- * Implements escalating backoff for OTP generation requests.
- * Uses Redis for distributed rate limiting across serverless instances.
- *
- * Rate limits:
- * - 1st request: allowed immediately
- * - 2nd request: 30 seconds cooldown
- * - 3rd request: 60 seconds cooldown
- * - 4th request: 120 seconds cooldown
- * - 5th+ request: 300 seconds cooldown (5 minutes)
- */
-
 import { getRedisClient } from "./client";
 
-/** Escalating backoff intervals in seconds */
 const BACKOFF_INTERVALS = [0, 30, 60, 120, 300];
 
-/** Maximum backoff interval (5 minutes) */
 const MAX_BACKOFF_SECONDS = 300;
 
-/** TTL for the rate limit counter (24 hours) */
 const RATE_LIMIT_TTL_SECONDS = 24 * 60 * 60;
 
 interface RateLimitResult {
@@ -13982,13 +12672,6 @@ interface RateLimitResult {
   retryAfterSeconds?: number;
 }
 
-/**
- * Check if an OTP request is allowed for the given user.
- * Implements escalating backoff based on attempt count.
- *
- * @param userId - User ID to check
- * @returns Rate limit result with allowed flag and retry-after seconds
- */
 export async function checkOtpRateLimit(
   userId: string
 ): Promise<RateLimitResult> {
@@ -14051,12 +12734,6 @@ export async function checkOtpRateLimit(
   }
 }
 
-/**
- * Reset the OTP rate limit counter for a user.
- * Called after successful OTP verification.
- *
- * @param userId - User ID to reset
- */
 export async function resetOtpRateLimit(userId: string): Promise<void> {
   const redis = getRedisClient();
 
@@ -14085,20 +12762,12 @@ import type { IRevocationStore } from "@app/interfaces/revocation.store";
 import { getRedisClient, recordRedisFailure } from "./client";
 import { SimpleLRU } from "./simple-lru";
 
-/**
- * Redis key patterns for revocation:
- *
- * - `revoked:token:{jti}`        — individual token revocation
- * - `revoked:session:{sessionId}` — session-level revocation
- * - `revoked:user:{userId}`       — user-level revocation (stores timestamp)
- */
 const KEYS = {
   token: (jti: string) => `revoked:token:${jti}`,
   session: (sessionId: string) => `revoked:session:${sessionId}`,
   user: (userId: string) => `revoked:user:${userId}`,
 } as const;
 
-/** LRU cache capacity: 10,000 entries per serverless instance */
 const LRU_MAX_SIZE = 10_000;
 
 export class RevocationStoreImpl implements IRevocationStore {
@@ -14225,17 +12894,6 @@ export class RevocationStoreImpl implements IRevocationStore {
 File: src\infrastructure\redis\simple-lru.ts
 --------------------------------------------------------------------------------
 
-/**
- * Simple LRU cache with TTL support.
- *
- * Used as a per-process fallback when Redis is unavailable.
- * NOT shared across serverless instances — each instance has its own cache.
- *
- * Design:
- * - Fixed maximum capacity (evicts oldest on overflow)
- * - Entries auto-expire based on TTL
- * - O(1) get/set via Map (Map preserves insertion order in JS)
- */
 export class SimpleLRU<V> {
   private readonly cache = new Map<string, { value: V; expiresAt: number }>();
   private readonly maxSize: number;
@@ -14244,9 +12902,6 @@ export class SimpleLRU<V> {
     this.maxSize = maxSize;
   }
 
-  /**
-   * Set a value with a TTL (in seconds).
-   */
   set(key: string, value: V, ttlSeconds: number): void {
     if (this.cache.size >= this.maxSize && !this.cache.has(key)) {
       const firstKey = this.cache.keys().next().value;
@@ -14262,9 +12917,6 @@ export class SimpleLRU<V> {
     });
   }
 
-  /**
-   * Get a value. Returns undefined if not found or expired.
-   */
   get(key: string): V | undefined {
     const entry = this.cache.get(key);
     if (!entry) return undefined;
@@ -14279,30 +12931,18 @@ export class SimpleLRU<V> {
     return entry.value;
   }
 
-  /**
-   * Check if a key exists and is not expired.
-   */
   has(key: string): boolean {
     return this.get(key) !== undefined;
   }
 
-  /**
-   * Delete a specific key.
-   */
   delete(key: string): boolean {
     return this.cache.delete(key);
   }
 
-  /**
-   * Current number of entries (including potentially expired ones).
-   */
   get size(): number {
     return this.cache.size;
   }
 
-  /**
-   * Remove all expired entries. Called periodically or on demand.
-   */
   prune(): number {
     const now = Date.now();
     let pruned = 0;
@@ -14320,15 +12960,6 @@ export class SimpleLRU<V> {
 --------------------------------------------------------------------------------
 File: src\instrumentation.ts
 --------------------------------------------------------------------------------
-
-/**
- * Next.js Instrumentation Hook
- *
- * Called once when the Next.js server starts.
- * Initializes database connections and creates indexes.
- *
- * See: https://nextjs.org/docs/app/building-your-application/optimizing/instrumentation
- */
 
 import { createIndexes } from "@/infrastructure/database/indexes";
 
@@ -14371,15 +13002,6 @@ const BASE_COOKIE_CONFIG = {
 const ACCESS_TOKEN_COOKIE = "accessToken";
 const REFRESH_TOKEN_COOKIE = "refreshToken";
 
-/**
- * Set authentication cookies on an HTTP response.
- *
- * @param res The Next.js response object
- * @param accessToken The JWT access token (15 min expiry)
- * @param refreshToken The JWT refresh token (7 or 30 days)
- * @param rememberMe If true, refresh token expires in 30 days. Otherwise 7 days.
- * @returns The response object (for chaining)
- */
 export function setAuthCookies(
   res: NextResponse,
   accessToken: string,
@@ -14399,13 +13021,6 @@ export function setAuthCookies(
   return res;
 }
 
-/**
- * Clear authentication cookies from an HTTP response.
- * Used on logout, global logout, and failed refresh.
- *
- * @param res The Next.js response object
- * @returns The response object (for chaining)
- */
 export function clearAuthCookies(res: NextResponse): NextResponse {
   res.cookies.set(ACCESS_TOKEN_COOKIE, "", {
     ...BASE_COOKIE_CONFIG,
@@ -14429,10 +13044,6 @@ import { NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import type { RequestContext } from "@app/dtos/auth.dto";
 
-/**
- * Extract client IP address from request.
- * Checks X-Forwarded-For header (Vercel, CloudFlare) first, falls back to direct connection.
- */
 export function getClientIp(req: NextRequest): string {
   const forwardedFor = req.headers.get("x-forwarded-for");
   if (forwardedFor) {
@@ -14447,24 +13058,14 @@ export function getClientIp(req: NextRequest): string {
   return "unknown";
 }
 
-/**
- * Extract User-Agent header from request.
- */
 export function getUserAgent(req: NextRequest): string {
   return req.headers.get("user-agent") ?? "unknown";
 }
 
-/**
- * Generate a unique request ID for tracing.
- */
 export function generateRequestId(): string {
   return uuidv4();
 }
 
-/**
- * Build a complete RequestContext from a Next.js request.
- * Used by all use cases for audit logging.
- */
 export function buildRequestContext(req: NextRequest): RequestContext {
   return {
     requestId: generateRequestId(),
@@ -14487,11 +13088,6 @@ import { NotFoundError } from "@domain/errors/not-found.error";
 import { RateLimitError } from "@domain/errors/rate-limit.error";
 import { TokenError } from "@domain/errors/token.error";
 
-/**
- * Standard success response format.
- * @param data - Response data
- * @param status - HTTP status code (default 200)
- */
 export function successResponse<T>(
   data: T,
   status: number = 200
@@ -14499,12 +13095,6 @@ export function successResponse<T>(
   return NextResponse.json(data, { status });
 }
 
-/**
- * Standard error response format.
- * Overloaded to support two calling patterns:
- * 1. errorResponse(error: Error, requestId: string) - converts domain error
- * 2. errorResponse(error: string, code: string, requestId: string, status?: number, details?: unknown) - explicit error
- */
 export function errorResponse(
   error: Error | string,
   requestIdOrCode: string,
@@ -14531,10 +13121,6 @@ export function errorResponse(
   return NextResponse.json(body, { status: statusCode });
 }
 
-/**
- * Map domain errors to HTTP status codes and error codes.
- * Returns [statusCode, errorCode].
- */
 export function mapDomainErrorToHttp(error: Error): [number, string] {
   if (error instanceof AuthenticationError) {
     return [401, "AUTHENTICATION_ERROR"];
@@ -14567,10 +13153,6 @@ export function mapDomainErrorToHttp(error: Error): [number, string] {
   return [500, "INTERNAL_ERROR"];
 }
 
-/**
- * Handle domain errors uniformly across all route handlers.
- * Converts domain errors to HTTP responses.
- */
 export function handleDomainError(
   error: Error,
   requestId: string
@@ -14588,20 +13170,6 @@ export function handleDomainError(
 --------------------------------------------------------------------------------
 File: src\presentation\middleware\auth.ts
 --------------------------------------------------------------------------------
-
-/**
- * Authentication Middleware
- *
- * 8-step JWT verification process:
- * 1. Extract token from Authorization header
- * 2. Verify JWT signature and expiration
- * 3. Validate token structure (sub, jti, tokenVersion)
- * 4. Check JTI not revoked (Redis)
- * 5. Fetch user from database
- * 6. Verify user exists and is active
- * 7. Verify tokenVersion matches user's current version
- * 8. Verify user role meets required level
- */
 
 import { type NextRequest } from "next/server";
 import { JwtServiceImpl } from "@/infrastructure/crypto/jwt.service";
@@ -14624,12 +13192,6 @@ const ROLE_HIERARCHY: Record<string, number> = {
   admin: 2,
 };
 
-/**
- * Authentication middleware wrapper
- *
- * @param requiredLevel - Minimum required authentication level
- * @returns Wrapped handler with authentication
- */
 export function withAuth(requiredLevel: AuthLevel = "user") {
   return function (
     handler: RouteHandler
@@ -14704,24 +13266,11 @@ export function withAuth(requiredLevel: AuthLevel = "user") {
 File: src\presentation\middleware\cors.ts
 --------------------------------------------------------------------------------
 
-/**
- * CORS Middleware
- *
- * Validates Origin header against ALLOWED_ORIGINS and sets appropriate CORS headers.
- * Handles preflight OPTIONS requests.
- */
-
 import { type NextRequest, NextResponse } from "next/server";
 import { env } from "@/env";
 
 type RouteHandler = (request: NextRequest) => Promise<Response>;
 
-/**
- * CORS middleware wrapper
- *
- * @param handler - The route handler to wrap
- * @returns Wrapped handler with CORS support
- */
 export function withCors(handler: RouteHandler): RouteHandler {
   return async (request: NextRequest): Promise<Response> => {
     const origin = request.headers.get("origin");
@@ -14764,13 +13313,6 @@ export function withCors(handler: RouteHandler): RouteHandler {
 File: src\presentation\middleware\csrf.ts
 --------------------------------------------------------------------------------
 
-/**
- * CSRF Middleware
- *
- * Implements double-submit cookie pattern with timing-safe comparison.
- * Validates CSRF token from header against cookie value.
- */
-
 import { type NextRequest } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { AuthenticationError } from "@/domain/errors/authentication.error";
@@ -14779,12 +13321,6 @@ import { buildRequestContext } from "@/presentation/helpers/request-context";
 
 type RouteHandler = (request: NextRequest) => Promise<Response>;
 
-/**
- * CSRF middleware wrapper
- *
- * @param handler - The route handler to wrap
- * @returns Wrapped handler with CSRF protection
- */
 export function withCsrf(handler: RouteHandler): RouteHandler {
   return async (request: NextRequest): Promise<Response> => {
     const context = buildRequestContext(request);
@@ -14826,13 +13362,6 @@ export function withCsrf(handler: RouteHandler): RouteHandler {
 File: src\presentation\middleware\rate-limit.ts
 --------------------------------------------------------------------------------
 
-/**
- * Rate Limit Middleware
- *
- * Uses Upstash Ratelimit with sliding window algorithm.
- * Returns 429 with Retry-After header when limit exceeded.
- */
-
 import { type NextRequest } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { getRedisClient } from "@/infrastructure/redis/client";
@@ -14842,9 +13371,6 @@ import { buildRequestContext } from "@/presentation/helpers/request-context";
 
 type RouteHandler = (request: NextRequest) => Promise<Response>;
 
-/**
- * Get client IP address from request
- */
 function getClientIp(request: NextRequest): string {
   return (
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -14853,13 +13379,6 @@ function getClientIp(request: NextRequest): string {
   );
 }
 
-/**
- * Rate limit middleware wrapper
- *
- * @param maxRequests - Maximum number of requests allowed
- * @param windowSeconds - Time window in seconds
- * @returns Wrapped handler with rate limiting
- */
 export function withRateLimit(maxRequests: number, windowSeconds: number) {
   return function (handler: RouteHandler): RouteHandler {
     const redis = getRedisClient();
@@ -14912,13 +13431,6 @@ File: src\presentation\validation\schemas.ts
 --------------------------------------------------------------------------------
 
 import { z } from "zod";
-
-/**
- * Zod schemas for all authentication API endpoints.
- *
- * These schemas are used by the withValidation middleware
- * to validate incoming request bodies before they reach the use cases.
- */
 
 export const SignupSchema = z.object({
   email: z.string().email("Invalid email format").max(254).trim().toLowerCase(),

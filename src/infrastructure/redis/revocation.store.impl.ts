@@ -2,20 +2,12 @@ import type { IRevocationStore } from "@app/interfaces/revocation.store";
 import { getRedisClient, recordRedisFailure } from "./client";
 import { SimpleLRU } from "./simple-lru";
 
-/**
- * Redis key patterns for revocation:
- *
- * - `revoked:token:{jti}`        — individual token revocation
- * - `revoked:session:{sessionId}` — session-level revocation
- * - `revoked:user:{userId}`       — user-level revocation (stores timestamp)
- */
 const KEYS = {
   token: (jti: string) => `revoked:token:${jti}`,
   session: (sessionId: string) => `revoked:session:${sessionId}`,
   user: (userId: string) => `revoked:user:${userId}`,
 } as const;
 
-/** LRU cache capacity: 10,000 entries per serverless instance */
 const LRU_MAX_SIZE = 10_000;
 
 export class RevocationStoreImpl implements IRevocationStore {

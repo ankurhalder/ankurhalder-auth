@@ -4,10 +4,6 @@ import { USERS_COLLECTION } from "./schemas/user.schema";
 import { SESSIONS_COLLECTION } from "./schemas/session.schema";
 import { AUTH_EVENTS_COLLECTION } from "./schemas/auth-event.schema";
 
-/**
- * Index definitions for all collections.
- * Each entry: [collectionName, indexes[]]
- */
 const INDEX_DEFINITIONS: Array<{
   collection: string;
   indexes: IndexDescription[];
@@ -114,15 +110,6 @@ const INDEX_DEFINITIONS: Array<{
   },
 ];
 
-/**
- * Create all indexes for all collections.
- *
- * Called from instrumentation.ts on cold start.
- * Uses createIndexes (plural) for efficiency — one round trip per collection.
- *
- * Safe to call repeatedly: MongoDB's createIndexes is idempotent.
- * If an index already exists with the same key and options, it is a no-op.
- */
 export async function createIndexes(): Promise<void> {
   const db = await getDatabase();
 
@@ -141,10 +128,6 @@ export async function createIndexes(): Promise<void> {
   }
 }
 
-/**
- * Drop all custom indexes (not _id) for a collection.
- * Used in tests and migration scripts.
- */
 export async function dropIndexes(
   db: Db,
   collectionName: string

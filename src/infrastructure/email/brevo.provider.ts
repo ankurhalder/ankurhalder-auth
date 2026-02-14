@@ -3,10 +3,6 @@ import pRetry from "p-retry";
 import type { IEmailProvider } from "@app/interfaces/email.provider";
 import { env } from "@/env";
 
-/**
- * Get the Brevo API client.
- * The API key is set via environment variable that Brevo SDK reads automatically.
- */
 function getApiInstance(): brevo.TransactionalEmailsApi {
   if (!process.env.BREVO_API_KEY) {
     process.env.BREVO_API_KEY = env.BREVO_API_KEY;
@@ -15,13 +11,6 @@ function getApiInstance(): brevo.TransactionalEmailsApi {
   return new brevo.TransactionalEmailsApi();
 }
 
-/**
- * p-retry options for all email sending.
- *
- * - 3 attempts total (1 initial + 2 retries)
- * - Exponential backoff: 1s, 2s
- * - Does NOT retry on 4xx errors (client errors, like invalid API key)
- */
 const RETRY_OPTIONS: Parameters<typeof pRetry>[1] = {
   retries: 2,
   minTimeout: 1000,
@@ -42,9 +31,6 @@ const RETRY_OPTIONS: Parameters<typeof pRetry>[1] = {
   },
 };
 
-/**
- * Base email parameters shared by all transactional emails.
- */
 interface BaseEmailParams {
   sender: { email: string; name: string };
   to: Array<{ email: string }>;
@@ -52,9 +38,6 @@ interface BaseEmailParams {
   htmlContent: string;
 }
 
-/**
- * Build the verification email.
- */
 function buildVerificationEmail(to: string, token: string): BaseEmailParams {
   const verifyUrl = `${env.NEXT_PUBLIC_SITE_URL}/verify-email?token=${encodeURIComponent(token)}`;
 
@@ -117,9 +100,6 @@ function buildVerificationEmail(to: string, token: string): BaseEmailParams {
   };
 }
 
-/**
- * Build the OTP email (admin only).
- */
 function buildOtpEmail(to: string, otp: string): BaseEmailParams {
   return {
     sender: { email: env.FROM_EMAIL, name: "ankurhalder.com" },
@@ -173,9 +153,6 @@ function buildOtpEmail(to: string, otp: string): BaseEmailParams {
   };
 }
 
-/**
- * Build the password reset email.
- */
 function buildPasswordResetEmail(to: string, token: string): BaseEmailParams {
   const resetUrl = `${env.NEXT_PUBLIC_SITE_URL}/reset-password?token=${encodeURIComponent(token)}`;
 
@@ -238,9 +215,6 @@ function buildPasswordResetEmail(to: string, token: string): BaseEmailParams {
   };
 }
 
-/**
- * Build the contact form forwarding email.
- */
 function buildContactFormEmail(
   from: string,
   name: string,
@@ -297,9 +271,6 @@ function buildContactFormEmail(
   };
 }
 
-/**
- * Escape HTML special characters to prevent XSS in email templates.
- */
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
     "&": "&amp;",

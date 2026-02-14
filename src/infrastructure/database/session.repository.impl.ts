@@ -5,9 +5,6 @@ import { getCollection } from "./connection";
 import type { SessionDocument } from "./schemas/session.schema";
 import { SESSIONS_COLLECTION } from "./schemas/session.schema";
 
-/**
- * Maps a MongoDB SessionDocument to a domain SessionEntity.
- */
 function toEntity(doc: SessionDocument): SessionEntity {
   return {
     id: doc._id.toHexString(),

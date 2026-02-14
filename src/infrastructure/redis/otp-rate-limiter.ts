@@ -1,26 +1,9 @@
-/**
- * OTP Rate Limiter
- *
- * Implements escalating backoff for OTP generation requests.
- * Uses Redis for distributed rate limiting across serverless instances.
- *
- * Rate limits:
- * - 1st request: allowed immediately
- * - 2nd request: 30 seconds cooldown
- * - 3rd request: 60 seconds cooldown
- * - 4th request: 120 seconds cooldown
- * - 5th+ request: 300 seconds cooldown (5 minutes)
- */
-
 import { getRedisClient } from "./client";
 
-/** Escalating backoff intervals in seconds */
 const BACKOFF_INTERVALS = [0, 30, 60, 120, 300];
 
-/** Maximum backoff interval (5 minutes) */
 const MAX_BACKOFF_SECONDS = 300;
 
-/** TTL for the rate limit counter (24 hours) */
 const RATE_LIMIT_TTL_SECONDS = 24 * 60 * 60;
 
 interface RateLimitResult {
@@ -28,13 +11,6 @@ interface RateLimitResult {
   retryAfterSeconds?: number;
 }
 
-/**
- * Check if an OTP request is allowed for the given user.
- * Implements escalating backoff based on attempt count.
- *
- * @param userId - User ID to check
- * @returns Rate limit result with allowed flag and retry-after seconds
- */
 export async function checkOtpRateLimit(
   userId: string
 ): Promise<RateLimitResult> {
@@ -97,12 +73,6 @@ export async function checkOtpRateLimit(
   }
 }
 
-/**
- * Reset the OTP rate limit counter for a user.
- * Called after successful OTP verification.
- *
- * @param userId - User ID to reset
- */
 export async function resetOtpRateLimit(userId: string): Promise<void> {
   const redis = getRedisClient();
 

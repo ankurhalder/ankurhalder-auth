@@ -1,11 +1,3 @@
-/**
- * Input/Output DTOs for authentication use cases.
- *
- * DTOs cross layer boundaries. They are plain objects (no methods, no validation).
- * Validation is performed by Zod schemas in the Presentation Layer before
- * the data reaches the use case.
- */
-
 export interface SignupInput {
   email: string;
   password: string;
@@ -23,11 +15,6 @@ export interface SigninInput {
   rememberMe?: boolean;
 }
 
-/**
- * Signin has two possible outcomes:
- * 1. Standard user: authenticated immediately, tokens set
- * 2. Admin user: OTP required, no tokens yet
- */
 export interface SigninOutputAuthenticated {
   isAuthenticated: true;
   requiresOtp: false;
@@ -37,9 +24,9 @@ export interface SigninOutputAuthenticated {
     role: "admin" | "user";
     tier: "free" | "pro";
   };
-  /** Access token string (also set as cookie) */
+
   accessToken: string;
-  /** Refresh token string (also set as cookie) */
+
   refreshToken: string;
 }
 
@@ -99,15 +86,10 @@ export interface GlobalLogoutOutput {
   sessionsRevoked: number;
 }
 
-/**
- * Request context passed to all use cases for audit logging.
- * Extracted from the HTTP request by the presentation layer.
- */
 export interface RequestContext {
-  /** Unique request ID (UUID v4) for tracing */
   requestId: string;
-  /** Client IP address */
+
   ipAddress: string;
-  /** Raw User-Agent header */
+
   userAgent: string;
 }

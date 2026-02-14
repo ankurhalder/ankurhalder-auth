@@ -1,10 +1,3 @@
-/**
- * Reset Password Route Handler
- *
- * POST /api/auth/reset-password
- * Middleware: CORS
- */
-
 import { type NextRequest } from "next/server";
 import { ResetPasswordUseCase } from "@/application/use-cases/reset-password.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

@@ -14,25 +14,8 @@ import { verifyOtp } from "@infra/crypto/otp.service";
 import { sha256Hash } from "@infra/crypto/hash";
 import { resetOtpRateLimit } from "@infra/redis/otp-rate-limiter";
 
-/** Admin sessions default to 7 days (no rememberMe for admin OTP flow) */
 const ADMIN_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-/**
- * VerifyOtpUseCase — Completes the admin two-factor authentication flow.
- *
- * Flow:
- * 1. Find user by email
- * 2. Check OTP preconditions (exists, not expired, not max attempts)
- * 3. Decrypt stored OTP and compare (timing-safe)
- * 4. If valid: create session, generate tokens, clear OTP fields, reset rate limit
- * 5. If invalid: increment attempts, check for lockout
- *
- * Security:
- * - Maximum 5 attempts per OTP
- * - 15-minute OTP expiry
- * - Timing-safe comparison (constant-time regardless of how many digits match)
- * - OTP fields cleared after successful verification
- */
 export class VerifyOtpUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

@@ -1,7 +1,3 @@
-/**
- * Public user data returned by GetCurrentUser.
- * Explicitly excludes sensitive fields.
- */
 export interface CurrentUserOutput {
   id: string;
   email: string;

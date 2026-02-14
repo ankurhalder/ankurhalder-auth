@@ -1,8 +1,5 @@
 import type { ObjectId } from "mongodb";
 
-/**
- * MongoDB document shape for the platform_sessions collection.
- */
 export interface SessionDocument {
   _id: ObjectId;
   sessionId: string;
@@ -15,5 +12,4 @@ export interface SessionDocument {
   lastUsedAt: Date;
 }
 
-/** Collection name */
 export const SESSIONS_COLLECTION = "platform_sessions" as const;

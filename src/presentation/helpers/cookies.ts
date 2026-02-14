@@ -14,15 +14,6 @@ const BASE_COOKIE_CONFIG = {
 const ACCESS_TOKEN_COOKIE = "accessToken";
 const REFRESH_TOKEN_COOKIE = "refreshToken";
 
-/**
- * Set authentication cookies on an HTTP response.
- *
- * @param res The Next.js response object
- * @param accessToken The JWT access token (15 min expiry)
- * @param refreshToken The JWT refresh token (7 or 30 days)
- * @param rememberMe If true, refresh token expires in 30 days. Otherwise 7 days.
- * @returns The response object (for chaining)
- */
 export function setAuthCookies(
   res: NextResponse,
   accessToken: string,
@@ -42,13 +33,6 @@ export function setAuthCookies(
   return res;
 }
 
-/**
- * Clear authentication cookies from an HTTP response.
- * Used on logout, global logout, and failed refresh.
- *
- * @param res The Next.js response object
- * @returns The response object (for chaining)
- */
 export function clearAuthCookies(res: NextResponse): NextResponse {
   res.cookies.set(ACCESS_TOKEN_COOKIE, "", {
     ...BASE_COOKIE_CONFIG,

@@ -3,16 +3,6 @@ import { JwtServiceImpl } from "@infra/crypto/jwt.service";
 
 const tokenService = new JwtServiceImpl();
 
-/**
- * JWKS endpoint — serves public keys in JWK format.
- *
- * Used by:
- * - The frontend (ankurhalder.com) to verify access tokens locally
- * - Any future service that needs to verify tokens
- *
- * Caching: 24 hours (Cache-Control set via vercel.json headers)
- * CORS: open to all origins (public keys are public)
- */
 export async function GET(): Promise<NextResponse> {
   try {
     const jwks = await tokenService.getJwksData();

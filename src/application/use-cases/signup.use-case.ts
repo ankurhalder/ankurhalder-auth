@@ -15,26 +15,6 @@ import {
 import { generateRandomToken, sha256Hash } from "@infra/crypto/hash";
 import { encryptOtp } from "@infra/crypto/otp.service";
 
-/**
- * SignupUseCase — Registers a new user.
- *
- * Flow:
- * 1. Validate password complexity (8+ chars, upper, lower, digit, special)
- * 2. Check if email is already registered
- * 3. Hash password with bcrypt(12)
- * 4. Generate verification token (32 random bytes = 64 hex chars)
- * 5. Store SHA256(token) on user for indexed lookup
- * 6. Store AES-encrypted token for email sending
- * 7. Create user in DB with tokenVersion: 0, tier: "free", isVerified: false
- * 8. Send verification email (fire-and-forget)
- * 9. Emit AUTH_EVENT: SIGNUP
- * 10. Return success message
- *
- * Error cases:
- * - Weak password: ValidationError (400)
- * - Duplicate email: ConflictError (409)
- * - Database failure: unhandled (500)
- */
 export class SignupUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

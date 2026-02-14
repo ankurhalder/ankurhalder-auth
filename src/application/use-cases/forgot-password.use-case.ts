@@ -5,9 +5,6 @@ import type { RequestContext } from "@app/dtos/auth.dto";
 import { generateRandomToken, sha256Hash } from "@infra/crypto/hash";
 import { encryptOtp } from "@infra/crypto/otp.service";
 
-/**
- * Input/Output DTOs for forgot password.
- */
 export interface ForgotPasswordInput {
   email: string;
 }
@@ -17,34 +14,8 @@ export interface ForgotPasswordOutput {
   message: string;
 }
 
-/** Password reset token expiry: 1 hour */
 const RESET_TOKEN_EXPIRY_MS = 60 * 60 * 1000;
 
-/**
- * ForgotPasswordUseCase — Initiates the password reset flow.
- *
- * CRITICAL SECURITY RULE:
- * This endpoint ALWAYS returns the same response, whether the email exists
- * in the database or not. This prevents email enumeration attacks.
- *
- * Flow:
- * 1. Normalize email to lowercase
- * 2. Look up user by email
- * 3. If user NOT found: log the attempt, return generic success (STOP)
- * 4. If user found:
- *    a. Generate a cryptographically random reset token (32 bytes = 64 hex)
- *    b. Compute SHA256(token) for indexed storage
- *    c. Encrypt the raw token with AES-256-CBC for storage
- *    d. Store hash + encrypted token + expiry on user document
- *    e. Send password reset email (fire-and-forget) with raw token in URL
- *    f. Emit audit event
- * 5. Return generic success message
- *
- * Why store both hash AND encrypted token?
- * - Hash: enables O(1) indexed lookup when the user clicks the reset link
- * - Encrypted token: enables re-sending the same reset link if needed
- *   (without generating a new token and invalidating the old one)
- */
 export class ForgotPasswordUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

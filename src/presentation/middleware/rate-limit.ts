@@ -1,10 +1,3 @@
-/**
- * Rate Limit Middleware
- *
- * Uses Upstash Ratelimit with sliding window algorithm.
- * Returns 429 with Retry-After header when limit exceeded.
- */
-
 import { type NextRequest } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { getRedisClient } from "@/infrastructure/redis/client";
@@ -14,9 +7,6 @@ import { buildRequestContext } from "@/presentation/helpers/request-context";
 
 type RouteHandler = (request: NextRequest) => Promise<Response>;
 
-/**
- * Get client IP address from request
- */
 function getClientIp(request: NextRequest): string {
   return (
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -25,13 +15,6 @@ function getClientIp(request: NextRequest): string {
   );
 }
 
-/**
- * Rate limit middleware wrapper
- *
- * @param maxRequests - Maximum number of requests allowed
- * @param windowSeconds - Time window in seconds
- * @returns Wrapped handler with rate limiting
- */
 export function withRateLimit(maxRequests: number, windowSeconds: number) {
   return function (handler: RouteHandler): RouteHandler {
     const redis = getRedisClient();

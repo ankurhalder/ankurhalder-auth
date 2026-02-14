@@ -13,17 +13,9 @@ import { env } from "@/env";
 const ALGORITHM = "RS256" as const;
 const ACCESS_TOKEN_TTL_SECONDS = 15 * 60;
 
-/**
- * Type alias for jose key material.
- * Since jose doesn't export KeyLike in this version, we define it explicitly.
- * Using 'any' to avoid conflicts between crypto.KeyObject and crypto.webcrypto.CryptoKey
- */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CryptoKey = any;
 
-/**
- * Parsed key material, cached after first load.
- */
 interface KeySet {
   privateKey: CryptoKey;
   publicKey: CryptoKey;
@@ -38,9 +30,6 @@ let previousKeys: Array<{
 }> = [];
 let previousKeysExpiry: number = 0;
 
-/**
- * Load and cache access token key pair.
- */
 async function getAccessKeySet(): Promise<KeySet> {
   if (accessKeySet) return accessKeySet;
 
@@ -57,9 +46,6 @@ async function getAccessKeySet(): Promise<KeySet> {
   return accessKeySet;
 }
 
-/**
- * Load and cache refresh token key pair.
- */
 async function getRefreshKeySet(): Promise<KeySet> {
   if (refreshKeySet) return refreshKeySet;
 
@@ -76,11 +62,6 @@ async function getRefreshKeySet(): Promise<KeySet> {
   return refreshKeySet;
 }
 
-/**
- * Load previous (rotated) public keys.
- * These are accepted for verification but never used for signing.
- * They expire 30 days after server start to ensure old tokens are eventually rejected.
- */
 async function getPreviousKeys(): Promise<
   Array<{ publicKey: CryptoKey; kid: string }>
 > {
@@ -113,10 +94,6 @@ async function getPreviousKeys(): Promise<
   return previousKeys;
 }
 
-/**
- * Find the public key for a given KID.
- * Searches current keys first, then previous (rotated) keys.
- */
 async function findPublicKeyByKid(
   kid: string,
   type: "access" | "refresh"
@@ -136,9 +113,6 @@ async function findPublicKeyByKid(
   return null;
 }
 
-/**
- * Generate a 128-bit hex JTI (JWT ID) for token revocation.
- */
 function generateJti(): string {
   return crypto.randomBytes(16).toString("hex");
 }
@@ -193,21 +167,6 @@ export class JwtServiceImpl implements ITokenService {
     return { token, jti };
   }
 
-  /**
-   * Verify an access token — the complete 8-step verification chain.
-   *
-   * Steps:
-   * 1. Parse JWT header (extract kid)
-   * 2. Find public key by kid (current or previous)
-   * 3. Verify signature + expiry via jose.jwtVerify
-   * 4. Validate payload structure
-   *
-   * Steps 5-8 (revocation checks, DB user fetch) are performed
-   * by the auth middleware, NOT here. This method only handles
-   * cryptographic verification.
-   *
-   * Returns null on ANY failure (no partial auth state).
-   */
   async verifyAccessToken(token: string): Promise<AccessTokenPayload | null> {
     try {
       const header = jose.decodeProtectedHeader(token);
@@ -296,14 +255,6 @@ export class JwtServiceImpl implements ITokenService {
     }
   }
 
-  /**
-   * Generate JWKS data for the /.well-known/jwks.json endpoint.
-   *
-   * Includes:
-   * - Current access token public key
-   * - Current refresh token public key
-   * - Previous (rotated) public keys (if not expired)
-   */
   async getJwksData(): Promise<JsonWebKeySet> {
     const keys: JsonWebKey[] = [];
 

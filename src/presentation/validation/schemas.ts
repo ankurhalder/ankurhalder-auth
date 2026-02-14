@@ -1,12 +1,5 @@
 import { z } from "zod";
 
-/**
- * Zod schemas for all authentication API endpoints.
- *
- * These schemas are used by the withValidation middleware
- * to validate incoming request bodies before they reach the use cases.
- */
-
 export const SignupSchema = z.object({
   email: z.string().email("Invalid email format").max(254).trim().toLowerCase(),
   password: z

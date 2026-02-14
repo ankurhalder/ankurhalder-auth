@@ -1,11 +1,3 @@
-/**
- * Signup Route Handler
- *
- * POST /api/auth/signup
- * Rate limit: 5 requests per hour per IP
- * Middleware: CORS, Rate Limit
- */
-
 import { type NextRequest } from "next/server";
 import { SignupUseCase } from "@/application/use-cases/signup.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

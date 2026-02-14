@@ -1,10 +1,5 @@
 import { z } from "zod";
 
-/**
- * Environment variable schema.
- * Validated once at module load time. If any required variable is missing
- * or malformed, the process will crash immediately with a descriptive error.
- */
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
@@ -63,9 +58,6 @@ const envSchema = z.object({
   CRON_SECRET: z.string().min(16, "CRON_SECRET must be at least 16 characters"),
 });
 
-/**
- * Parse and validate. Crashes fast on missing/invalid variables.
- */
 function validateEnv(): z.infer<typeof envSchema> {
   const result = envSchema.safeParse(process.env);
 
@@ -81,14 +73,6 @@ function validateEnv(): z.infer<typeof envSchema> {
   return result.data;
 }
 
-/**
- * Exported validated environment. Import this instead of process.env.
- *
- * @example
- * import { env } from "@/env";
- * const db = client.db(env.DB_NAME);
- */
 export const env = validateEnv();
 
-/** Type of the validated environment */
 export type Env = z.infer<typeof envSchema>;

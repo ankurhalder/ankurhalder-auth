@@ -10,32 +10,8 @@ import type {
 import { NotFoundError } from "@domain/errors/not-found.error";
 import { UserMethods } from "@domain/entities/user.entity";
 
-/** User revocation TTL: 30 days (matches max token lifetime with rememberMe) */
 const USER_REVOCATION_TTL_SECONDS = 30 * 24 * 60 * 60;
 
-/**
- * GlobalLogoutUseCase — Signs out all sessions for a user.
- *
- * This is the nuclear option. Used for:
- * - User-initiated "sign out everywhere"
- * - Admin-forced account lockout
- * - Post-compromise recovery
- *
- * Flow:
- * 1. Fetch user, verify exists
- * 2. Increment user.tokenVersion in DB
- *    (this invalidates all existing JWTs: their `tv` claim no longer matches)
- * 3. Revoke all user sessions in Redis (timestamp-based: any token issued before
- *    this timestamp is considered revoked)
- * 4. Delete all sessions for user from MongoDB
- * 5. Clear auth cookies (done by presentation layer)
- * 6. Emit audit event
- *
- * Three-pronged invalidation:
- * - tokenVersion increment: invalidates tokens on DB-check (refresh, /me)
- * - Redis user revocation: invalidates tokens on revocation-check (every request)
- * - Session deletion: prevents future refresh using existing refresh tokens
- */
 export class GlobalLogoutUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

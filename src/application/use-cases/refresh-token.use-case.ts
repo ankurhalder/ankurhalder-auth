@@ -12,37 +12,8 @@ import type {
 import { TokenError } from "@domain/errors/token.error";
 import { sha256Hash } from "@infra/crypto/hash";
 
-/** Default new session TTL: 7 days */
 const DEFAULT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-/**
- * RefreshTokenUseCase — Rotates a refresh token and issues new access + refresh tokens.
- *
- * This is the most security-critical use case because:
- * 1. It extends the user's session without re-authentication
- * 2. It must handle token replay attacks (same refresh token used twice)
- * 3. It must atomically delete the old session and create a new one
- *
- * Flow:
- * 1. Hash the incoming refresh token: SHA256(refreshToken)
- * 2. Atomically find and delete the session by hash (findOneAndDelete)
- * 3. Verify the refresh JWT signature and claims
- * 4. Verify user exists, is verified, and tokenVersion matches
- * 5. Generate new session (new sessionId, new tokens)
- * 6. Store new session with new hashed refresh token
- * 7. Set new cookies (done by presentation layer)
- *
- * Replay detection:
- * - If step 2 returns null (session not found), it means either:
- *   a) The token was already used (session was already deleted)
- *   b) The token was never valid
- * - In either case, return TokenError (client must re-authenticate)
- *
- * Why findOneAndDelete?
- * - Atomic: prevents TOCTOU race conditions
- * - If two refresh requests arrive simultaneously with the same token,
- *   only ONE can find-and-delete the session. The other gets null.
- */
 export class RefreshTokenUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

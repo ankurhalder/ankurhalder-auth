@@ -1,11 +1,3 @@
-/**
- * Refresh Token Route Handler
- *
- * POST /api/auth/refresh
- * Rate limit: 20 requests per minute per IP
- * Middleware: CORS, Rate Limit
- */
-
 import { type NextRequest } from "next/server";
 import { RefreshTokenUseCase } from "@/application/use-cases/refresh-token.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

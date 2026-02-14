@@ -32,12 +32,6 @@ async function collection(): Promise<Collection<AuthEventDocument>> {
 }
 
 export class AuthEventRepositoryImpl implements IAuthEventRepository {
-  /**
-   * Write an audit event. Fire-and-forget.
-   *
-   * CRITICAL: This method catches all errors internally.
-   * Audit logging failures MUST NOT propagate to callers.
-   */
   async create(event: Omit<AuthEventEntity, "id">): Promise<void> {
     try {
       const col = await collection();

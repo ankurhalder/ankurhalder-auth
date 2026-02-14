@@ -1,10 +1,3 @@
-/**
- * Verify Email Route Handler
- *
- * POST /api/auth/verify-email
- * Middleware: CORS
- */
-
 import { type NextRequest } from "next/server";
 import { VerifyEmailUseCase } from "@/application/use-cases/verify-email.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

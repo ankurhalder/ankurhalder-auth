@@ -24,17 +24,6 @@ const CLIENT_OPTIONS: MongoClientOptions = {
   compressors: ["zstd", "snappy", "zlib"],
 };
 
-/**
- * Circuit breaker state.
- *
- * Tracks consecutive failures to prevent avalanche of connection
- * attempts when MongoDB is down.
- *
- * States:
- * - CLOSED: normal operation, connections are attempted
- * - OPEN: too many failures, reject immediately
- * - HALF_OPEN: recovery period, allow one probe attempt
- */
 interface CircuitBreakerState {
   failures: number;
   state: "CLOSED" | "OPEN" | "HALF_OPEN";
@@ -60,9 +49,6 @@ let connectionTimestamp: number = 0;
 
 const CONNECTION_TTL_MS = 10 * 60 * 1000;
 
-/**
- * Sanitize MongoDB connection errors to prevent leaking credentials.
- */
 function sanitizeError(error: unknown): string {
   if (error instanceof Error) {
     return error.message.replace(
@@ -73,9 +59,6 @@ function sanitizeError(error: unknown): string {
   return "Unknown database error";
 }
 
-/**
- * Check if the circuit breaker allows a connection attempt.
- */
 function canAttemptConnection(): boolean {
   if (circuitBreaker.state === "CLOSED") return true;
 
@@ -90,9 +73,6 @@ function canAttemptConnection(): boolean {
   return circuitBreaker.state === "HALF_OPEN";
 }
 
-/**
- * Record a successful connection — reset the circuit breaker.
- */
 function recordSuccess(): void {
   circuitBreaker.failures = 0;
   circuitBreaker.state = "CLOSED";
@@ -100,9 +80,6 @@ function recordSuccess(): void {
   circuitBreaker.nextRetryTime = 0;
 }
 
-/**
- * Record a connection failure — potentially open the circuit.
- */
 function recordFailure(): void {
   circuitBreaker.failures += 1;
   circuitBreaker.lastFailureTime = Date.now();
@@ -119,18 +96,6 @@ function recordFailure(): void {
   }
 }
 
-/**
- * Get a connected MongoDB client and database reference.
- *
- * Features:
- * - Singleton: reuses the same client across requests within a serverless instance
- * - Circuit breaker: stops hammering a down database
- * - Connection TTL: reconnects after 10 minutes to pick up cluster changes
- * - Error sanitization: never leaks connection strings
- * - Pool monitoring: logs significant connection pool events
- *
- * @throws Error if connection fails and circuit breaker is open
- */
 export async function getDatabase(): Promise<Db> {
   if (
     client &&
@@ -196,13 +161,6 @@ export async function getDatabase(): Promise<Db> {
   }
 }
 
-/**
- * Get a MongoDB collection with type safety.
- *
- * @example
- * const users = await getCollection<UserDocument>("platform_users");
- * const user = await users.findOne({ email: "user@example.com" });
- */
 export async function getCollection<T extends Document>(
   name: string
 ): Promise<import("mongodb").Collection<T>> {
@@ -210,10 +168,6 @@ export async function getCollection<T extends Document>(
   return database.collection<T>(name);
 }
 
-/**
- * Close the MongoDB connection gracefully.
- * Called during shutdown or when connection TTL expires.
- */
 export async function closeConnection(): Promise<void> {
   if (client) {
     try {

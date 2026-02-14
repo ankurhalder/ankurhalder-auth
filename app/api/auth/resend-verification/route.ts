@@ -1,11 +1,3 @@
-/**
- * Resend Verification Route Handler
- *
- * POST /api/auth/resend-verification
- * Rate limit: 5 requests per hour per IP
- * Middleware: CORS, Rate Limit
- */
-
 import { type NextRequest } from "next/server";
 import { ResendVerificationUseCase } from "@/application/use-cases/resend-verification.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

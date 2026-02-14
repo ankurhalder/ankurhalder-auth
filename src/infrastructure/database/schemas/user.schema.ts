@@ -1,9 +1,5 @@
 import type { ObjectId } from "mongodb";
 
-/**
- * MongoDB document shape for the platform_users collection.
- * Maps to/from the UserEntity domain type.
- */
 export interface UserDocument {
   _id: ObjectId;
   email: string;
@@ -29,5 +25,4 @@ export interface UserDocument {
   updatedAt: Date;
 }
 
-/** Collection name */
 export const USERS_COLLECTION = "platform_users" as const;

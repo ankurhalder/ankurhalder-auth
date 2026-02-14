@@ -1,10 +1,3 @@
-/**
- * Get Current User Route Handler
- *
- * GET /api/auth/me
- * Middleware: CORS, Auth (user level)
- */
-
 import { type NextRequest } from "next/server";
 import { GetCurrentUserUseCase } from "@/application/use-cases/get-current-user.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

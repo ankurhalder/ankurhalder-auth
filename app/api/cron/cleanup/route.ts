@@ -1,13 +1,3 @@
-/**
- * Cleanup Cron Job Route Handler
- *
- * POST /api/cron/cleanup
- * Authorization: Bearer {CRON_SECRET}
- *
- * Deletes expired sessions from database.
- * Should be called periodically via Vercel Cron or external scheduler.
- */
-
 import { type NextRequest, NextResponse } from "next/server";
 import { SessionRepositoryImpl } from "@/infrastructure/database/session.repository.impl";
 import { env } from "@/env";

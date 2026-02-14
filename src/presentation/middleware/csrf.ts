@@ -1,10 +1,3 @@
-/**
- * CSRF Middleware
- *
- * Implements double-submit cookie pattern with timing-safe comparison.
- * Validates CSRF token from header against cookie value.
- */
-
 import { type NextRequest } from "next/server";
 import { timingSafeEqual } from "crypto";
 import { AuthenticationError } from "@/domain/errors/authentication.error";
@@ -13,12 +6,6 @@ import { buildRequestContext } from "@/presentation/helpers/request-context";
 
 type RouteHandler = (request: NextRequest) => Promise<Response>;
 
-/**
- * CSRF middleware wrapper
- *
- * @param handler - The route handler to wrap
- * @returns Wrapped handler with CSRF protection
- */
 export function withCsrf(handler: RouteHandler): RouteHandler {
   return async (request: NextRequest): Promise<Response> => {
     const context = buildRequestContext(request);

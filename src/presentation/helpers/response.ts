@@ -7,11 +7,6 @@ import { NotFoundError } from "@domain/errors/not-found.error";
 import { RateLimitError } from "@domain/errors/rate-limit.error";
 import { TokenError } from "@domain/errors/token.error";
 
-/**
- * Standard success response format.
- * @param data - Response data
- * @param status - HTTP status code (default 200)
- */
 export function successResponse<T>(
   data: T,
   status: number = 200
@@ -19,12 +14,6 @@ export function successResponse<T>(
   return NextResponse.json(data, { status });
 }
 
-/**
- * Standard error response format.
- * Overloaded to support two calling patterns:
- * 1. errorResponse(error: Error, requestId: string) - converts domain error
- * 2. errorResponse(error: string, code: string, requestId: string, status?: number, details?: unknown) - explicit error
- */
 export function errorResponse(
   error: Error | string,
   requestIdOrCode: string,
@@ -51,10 +40,6 @@ export function errorResponse(
   return NextResponse.json(body, { status: statusCode });
 }
 
-/**
- * Map domain errors to HTTP status codes and error codes.
- * Returns [statusCode, errorCode].
- */
 export function mapDomainErrorToHttp(error: Error): [number, string] {
   if (error instanceof AuthenticationError) {
     return [401, "AUTHENTICATION_ERROR"];
@@ -87,10 +72,6 @@ export function mapDomainErrorToHttp(error: Error): [number, string] {
   return [500, "INTERNAL_ERROR"];
 }
 
-/**
- * Handle domain errors uniformly across all route handlers.
- * Converts domain errors to HTTP responses.
- */
 export function handleDomainError(
   error: Error,
   requestId: string

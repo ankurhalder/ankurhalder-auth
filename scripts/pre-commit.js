@@ -1,25 +1,3 @@
-#!/usr/bin/env node
-
-/**
- * Pre-commit Hook Script
- *
- * Runs comprehensive validation checks before allowing a commit:
- * 1. Remove comments (optional)
- * 2. Format code (Prettier)
- * 3. Lint code (ESLint with max warnings)
- * 4. Type check (TypeScript)
- * 5. Build project (Next.js)
- * 6. Generate project tree (crawl-project.js)
- * 7. Validate architectural boundaries
- *
- * Usage:
- *   node scripts/pre-commit.js
- *
- * Install as git hook:
- *   npx husky install
- *   npx husky add .husky/pre-commit "node scripts/pre-commit.js"
- */
-
 const { execSync } = require("child_process");
 const fs = require("fs");
 const path = require("path");
@@ -45,24 +23,15 @@ const CONFIG = {
   skipArchValidation: false,
 };
 
-/**
- * Log with color
- */
 function log(message, color = "reset") {
   console.log(`${colors[color]}${message}${colors.reset}`);
 }
 
-/**
- * Log step header
- */
 function logStep(step, total, message) {
   log(`\n[${step}/${total}] ${message}`, "cyan");
   log("─".repeat(60), "cyan");
 }
 
-/**
- * Execute command with error handling
- */
 function exec(command, description) {
   try {
     execSync(command, {
@@ -77,9 +46,6 @@ function exec(command, description) {
   }
 }
 
-/**
- * Check if git has staged changes in source files
- */
 function hasStagedSourceChanges() {
   try {
     const output = execSync("git diff --cached --name-only", {
@@ -98,9 +64,6 @@ function hasStagedSourceChanges() {
   }
 }
 
-/**
- * Step 1: Remove comments
- */
 async function removeComments() {
   if (CONFIG.skipRemoveComments) {
     log("⊘ Skipping comment removal", "yellow");
@@ -116,9 +79,6 @@ async function removeComments() {
   }
 }
 
-/**
- * Step 2: Format code
- */
 async function formatCode() {
   if (CONFIG.skipFormat) {
     log("⊘ Skipping code formatting", "yellow");
@@ -134,9 +94,6 @@ async function formatCode() {
   }
 }
 
-/**
- * Step 3: Lint code
- */
 async function lintCode() {
   if (CONFIG.skipLint) {
     log("⊘ Skipping linting", "yellow");
@@ -146,9 +103,6 @@ async function lintCode() {
   exec("npx eslint . --max-warnings=0", "ESLint validation");
 }
 
-/**
- * Step 4: Type check
- */
 async function typeCheck() {
   if (CONFIG.skipTypeCheck) {
     log("⊘ Skipping type check", "yellow");
@@ -158,9 +112,6 @@ async function typeCheck() {
   exec("npm run type-check", "TypeScript type checking");
 }
 
-/**
- * Step 5: Build project
- */
 async function buildProject() {
   if (CONFIG.skipBuild) {
     log("⊘ Skipping build", "yellow");
@@ -175,9 +126,6 @@ async function buildProject() {
   exec("npm run build", "Next.js build");
 }
 
-/**
- * Step 6: Generate project tree
- */
 async function generateProjectTree() {
   if (CONFIG.skipCrawl) {
     log("⊘ Skipping project crawl", "yellow");
@@ -193,9 +141,6 @@ async function generateProjectTree() {
   }
 }
 
-/**
- * Step 7: Validate architectural boundaries
- */
 async function validateArchitecturalBoundaries() {
   if (CONFIG.skipArchValidation) {
     log("⊘ Skipping architectural validation", "yellow");
@@ -298,9 +243,6 @@ async function validateArchitecturalBoundaries() {
   log("✓ No architectural boundary violations", "green");
 }
 
-/**
- * Main pre-commit function
- */
 async function preCommit() {
   const startTime = Date.now();
 

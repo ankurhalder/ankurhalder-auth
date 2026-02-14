@@ -6,9 +6,6 @@ import { ValidationError } from "@domain/errors/validation.error";
 import { generateRandomToken, sha256Hash } from "@infra/crypto/hash";
 import { encryptOtp } from "@infra/crypto/otp.service";
 
-/**
- * Input/Output DTOs for resend verification.
- */
 export interface ResendVerificationInput {
   email: string;
 }
@@ -18,36 +15,8 @@ export interface ResendVerificationOutput {
   message: string;
 }
 
-/** Verification token expiry: 1 hour */
 const VERIFICATION_TOKEN_EXPIRY_MS = 60 * 60 * 1000;
 
-/**
- * ResendVerificationUseCase — Sends a new verification email.
- *
- * This use case is for users who:
- * - Never received the original verification email
- * - Had their verification link expire
- * - Accidentally deleted the email
- *
- * Flow:
- * 1. Find user by email
- * 2. If user not found: return generic success (prevents enumeration)
- * 3. If user already verified: return error (no point in reverifying)
- * 4. Generate a NEW verification token (invalidates any previous one)
- * 5. Store hash + encrypted token + new expiry
- * 6. Send verification email (fire-and-forget)
- * 7. Emit audit event
- * 8. Return success
- *
- * Rate limiting:
- * This endpoint is rate-limited to 3 requests per hour per IP
- * (handled by the presentation layer's rate limit middleware).
- *
- * SECURITY:
- * - Generating a new token invalidates the old one
- *   (the old hash is overwritten in the DB, so the old link no longer works)
- * - The response is generic when user not found (prevents enumeration)
- */
 export class ResendVerificationUseCase {
   constructor(
     private readonly userRepository: IUserRepository,

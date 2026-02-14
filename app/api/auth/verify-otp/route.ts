@@ -1,11 +1,3 @@
-/**
- * Verify OTP Route Handler
- *
- * POST /api/auth/verify-otp
- * Rate limit: 10 requests per 15 minutes per IP
- * Middleware: CORS, Rate Limit
- */
-
 import { type NextRequest } from "next/server";
 import { VerifyOtpUseCase } from "@/application/use-cases/verify-otp.use-case";
 import { UserRepositoryImpl } from "@/infrastructure/database/user.repository.impl";

@@ -1,10 +1,3 @@
-/**
- * Logout Route Handler
- *
- * POST /api/auth/logout
- * Middleware: CORS, Auth (user level)
- */
-
 import { type NextRequest } from "next/server";
 import { LogoutUseCase } from "@/application/use-cases/logout.use-case";
 import { SessionRepositoryImpl } from "@/infrastructure/database/session.repository.impl";

@@ -7,26 +7,8 @@ import type {
   RequestContext,
 } from "@app/dtos/auth.dto";
 
-/** Session revocation TTL: 7 days (matches max session duration) */
 const SESSION_REVOCATION_TTL_SECONDS = 7 * 24 * 60 * 60;
 
-/**
- * LogoutUseCase — Signs out the current session.
- *
- * Flow:
- * 1. Revoke the session in Redis (so any existing access tokens are invalidated)
- * 2. Delete the session from MongoDB
- * 3. Clear auth cookies (done by presentation layer)
- * 4. Emit audit event
- *
- * Why both Redis revocation AND MongoDB deletion?
- * - Redis revocation: immediately invalidates any access tokens still in flight
- *   (access tokens are not checked against MongoDB on every request — only
- *   on refresh. Redis revocation catches the in-between.)
- * - MongoDB deletion: removes the refresh token capability permanently
- *
- * Cookie clearing is handled by the presentation layer (route handler).
- */
 export class LogoutUseCase {
   constructor(
     private readonly sessionRepository: ISessionRepository,

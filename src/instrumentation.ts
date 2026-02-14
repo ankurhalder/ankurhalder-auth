@@ -1,12 +1,3 @@
-/**
- * Next.js Instrumentation Hook
- *
- * Called once when the Next.js server starts.
- * Initializes database connections and creates indexes.
- *
- * See: https://nextjs.org/docs/app/building-your-application/optimizing/instrumentation
- */
-
 import { createIndexes } from "@/infrastructure/database/indexes";
 
 export async function register() {

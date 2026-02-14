@@ -7,10 +7,6 @@ import { getCollection } from "./connection";
 import type { UserDocument } from "./schemas/user.schema";
 import { USERS_COLLECTION } from "./schemas/user.schema";
 
-/**
- * Maps a MongoDB UserDocument to a domain UserEntity.
- * Converts ObjectId to string, strips MongoDB internals.
- */
 function toEntity(doc: UserDocument): UserEntity {
   return {
     id: doc._id.toHexString(),
@@ -34,9 +30,6 @@ function toEntity(doc: UserDocument): UserEntity {
   };
 }
 
-/**
- * Lazily resolved collection reference.
- */
 async function collection(): Promise<Collection<UserDocument>> {
   return getCollection<UserDocument>(USERS_COLLECTION);
 }
