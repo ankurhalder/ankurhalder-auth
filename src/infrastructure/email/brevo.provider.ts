@@ -83,7 +83,7 @@ interface BaseEmailParams {
 }
 
 function buildVerificationEmail(to: string, token: string): BaseEmailParams {
-  const verifyUrl = `${env.NEXT_PUBLIC_SITE_URL}/verify-email?token=${encodeURIComponent(token)}`;
+  const verifyUrl = `https://www.auth.ankurhalder.com/verify-email?token=${encodeURIComponent(token)}`;
 
   return {
     sender: { email: env.FROM_EMAIL, name: "ankurhalder.com" },

@@ -15,9 +15,17 @@ async function verifyEmailHandler(request: NextRequest): Promise<Response> {
   const context = buildRequestContext(request);
 
   try {
-    const body = await request.json();
+    let token: string | null = null;
 
-    const validationResult = VerifyEmailSchema.safeParse(body);
+    if (request.method === "GET") {
+      token = request.nextUrl.searchParams.get("token");
+    } else if (request.method === "POST") {
+      const body: unknown = await request.json();
+      const bodyObj = body as Record<string, unknown>;
+      token = bodyObj.token as string | null;
+    }
+
+    const validationResult = VerifyEmailSchema.safeParse({ token });
     if (!validationResult.success) {
       const fields = validationResult.error.errors.reduce(
         (acc, err) => {
@@ -31,7 +39,7 @@ async function verifyEmailHandler(request: NextRequest): Promise<Response> {
       throw new ValidationError("Invalid verification data", fields);
     }
 
-    const { token } = validationResult.data;
+    const { token: verifiedToken } = validationResult.data;
 
     const userRepository = new UserRepositoryImpl();
     const authEventRepository = new AuthEventRepositoryImpl();
@@ -41,7 +49,7 @@ async function verifyEmailHandler(request: NextRequest): Promise<Response> {
       authEventRepository
     );
 
-    await verifyEmailUseCase.execute({ token }, context);
+    await verifyEmailUseCase.execute({ token: verifiedToken }, context);
 
     return successResponse(
       {
@@ -57,4 +65,5 @@ async function verifyEmailHandler(request: NextRequest): Promise<Response> {
   }
 }
 
+export const GET = withCors(verifyEmailHandler);
 export const POST = withCors(verifyEmailHandler);
