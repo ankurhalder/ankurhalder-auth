@@ -4,11 +4,26 @@ import type { IEmailProvider } from "@app/interfaces/email.provider";
 import { env } from "@/env";
 
 function getApiInstance(): brevo.TransactionalEmailsApi {
+  const apiKeyFromEnv = env.BREVO_API_KEY;
+  const apiKeyFromProcess = process.env.BREVO_API_KEY;
+
+  console.log("[Brevo] API Key Debug Info:", {
+    hasEnvKey: !!apiKeyFromEnv,
+    envKeyLength: apiKeyFromEnv?.length ?? 0,
+    envKeyPrefix: apiKeyFromEnv?.substring(0, 20) ?? "MISSING",
+    hasProcessKey: !!apiKeyFromProcess,
+    processKeyLength: apiKeyFromProcess?.length ?? 0,
+    processKeyPrefix: apiKeyFromProcess?.substring(0, 20) ?? "MISSING",
+  });
+
   if (!process.env.BREVO_API_KEY) {
     process.env.BREVO_API_KEY = env.BREVO_API_KEY;
+    console.log("[Brevo] Set BREVO_API_KEY in process.env from env object");
   }
 
-  return new brevo.TransactionalEmailsApi();
+  const api = new brevo.TransactionalEmailsApi();
+  console.log("[Brevo] API instance created");
+  return api;
 }
 
 const RETRY_OPTIONS: Parameters<typeof pRetry>[1] = {
@@ -300,8 +315,24 @@ export class BrevoEmailProvider implements IEmailProvider {
     sendSmtpEmail.subject = params.subject;
     sendSmtpEmail.htmlContent = params.htmlContent;
 
+    console.log("[Brevo] Sending email:", {
+      from: params.sender.email,
+      to: params.to.map((t) => t.email),
+      subject: params.subject,
+      apiKeySet: !!process.env.BREVO_API_KEY,
+    });
+
     await pRetry(async () => {
-      await api.sendTransacEmail(sendSmtpEmail);
+      try {
+        await api.sendTransacEmail(sendSmtpEmail);
+        console.log("[Brevo] Email sent successfully");
+      } catch (error) {
+        console.error("[Brevo] sendTransacEmail failed:", {
+          status: (error as { statusCode?: number }).statusCode,
+          message: (error as Error).message,
+        });
+        throw error;
+      }
     }, RETRY_OPTIONS);
   }
 
